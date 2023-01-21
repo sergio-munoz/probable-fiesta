@@ -18,7 +18,6 @@ class MyApp:
         return f"MyApp: {self.context} {self.name} {self.error} {self.validated_args} {self.args_parse} {self.args}"
 
     def run(self):
-        print(f"Running MyApp: {self}" + ". returns a command queue")
         return self.context.command_queue.run_all()
 
 class MyAppBuilder:
@@ -106,15 +105,12 @@ class MyAppArgsBuilder(MyAppBuilder):
             if self.my_app.args_parse is None:
                 raise Exception("No argument parser set.")
             va = self.my_app.args_parse.parse_args(a)
-            print(type(va))
-            print(f"VA: {va}")
         else:
             va = self.my_app.args_parse.parse_args(None)
 
         if self.my_app.args_parse.error_message:
             self.my_app.error = f"{self.my_app.args_parse.error_message}"
         if not va:
-            print("No valid args parsed. Returning None. ")
             self.my_app.validated_args = None
         else:
             self.my_app.validated_args = va

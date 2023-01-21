@@ -3,7 +3,7 @@
 from .command_factory import CommandFactory
 from .command import Command
 
-from src.probable_fiesta.logger.logging_config import set_logger
+from ...logger.logging_config import set_logger
 from logging import WARN
 
 # Create a logger
@@ -42,7 +42,6 @@ class CommandQueue():
     def run_all(self):
         if self.length <= 0:
             LOG.warning("No commands in queue")
-            print("NO COMMANDS IN QUEUE")
             return None
         elif self.length == 1:
             self.run_command(self.queue.pop())
@@ -54,7 +53,6 @@ class CommandQueue():
     def get_history(self):
         if len(self.history) <= 0:
             LOG.warning("No commands in history")
-            print("NO COMMANDS IN HISTORY")
             return None
         elif len(self.history) == 1:
             return self.history.pop()

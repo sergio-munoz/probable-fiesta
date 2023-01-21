@@ -1,5 +1,5 @@
 """Command class."""
-from src.probable_fiesta.logger.logging_config import set_logger
+from ...logger.logging_config import set_logger
 
 from logging import ERROR
 

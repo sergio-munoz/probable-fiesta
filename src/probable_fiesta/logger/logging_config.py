@@ -1,26 +1,26 @@
 """Configuration file for logging."""
 import logging
 
-from ..config.module_config import LOGGER_DIR,DEFAULT_LOGGER_NAME,LOGGER_LEVEL,LOGGER_FORMAT
+from ..config.variables import LoggerDef as ld
 
 # Catchall
-if not LOGGER_LEVEL:
-    LOGGER_LEVEL = logging.INFO
-if not DEFAULT_LOGGER_NAME:
-    DEFAULT_LOGGER_NAME = "main_log"
-if not LOGGER_FORMAT:
-    LOGGER_FORMAT = "simple"
+if not ld.LEVEL:
+    ld.LEVEL = logging.INFO
+if not ld.NAME:
+    ld.NAME = "main_log"
+if not ld.FORMAT:
+    ld.FORMAT = "simple"
 
 
-def get_logger(log_name=DEFAULT_LOGGER_NAME):
-    logger = logging.getLogger(log_name)
-    return logger
+def get_logger(log_name=ld.NAME):
     """Get a configured logger.
     :param log_name: Name of the logger
     """
+    logger = logging.getLogger(log_name)
+    return logger
 
 # Create a simple logger in default directory "/Logger"
-def set_logger(log_name=DEFAULT_LOGGER_NAME, log_level=LOGGER_LEVEL, format=LOGGER_FORMAT):
+def set_logger(log_name=ld.NAME, log_level=ld.LEVEL, format=ld.FORMAT):
     """Create a simple logger in the default directory.
     :param log_name: Name of the logger and logger_name.log.
     :param log_level: logging.Debug, logging.Warning, etc.
@@ -35,7 +35,7 @@ def set_logger(log_name=DEFAULT_LOGGER_NAME, log_level=LOGGER_LEVEL, format=LOGG
     formatter = set_formatter_format(format)
 
     # Set path of the logger using ROOT_DIR and log_name
-    path = f"{LOGGER_DIR}/{log_name}.log"
+    path = f"{ld.DIRECTORY}/{log_name}.log"
     print(f"Using {path} as the log file")
 
     # Set the and formatter and fileHandler

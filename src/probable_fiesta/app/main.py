@@ -1,8 +1,6 @@
 """"Main module for probable_fiesta app."""
 import sys
 
-from ..logger.logging_config import get_logger
-from ..__about__ import __package_name__
 from ..config.variables import PackageDef as pd
 from ..config.variables import VariablesDef as vd
 from ..app.builder.my_app_builder import MyAppBuilder
@@ -13,15 +11,16 @@ from ..cli.v1 import create_argument_parser
 def main(args=None):
     """Main function for probable_fiesta app.
 
+
     Args:
         args (list): List of arguments. Defaults to None.
     """
-    print("Starting package main_app_builder:\n")
+    # Get args from cli if not provided
+    if not args:
+        args = sys.argv[1:]
 
-    # Create test app
+    # Create app builder
     my_app_builder = MyAppBuilder()
-    test_app = my_app_builder.name.set_name("test").build()
-    print(f"Test app created: {test_app.name}")
 
     # Create command queue for main_app
     command_builder = CommandBuilder()
@@ -44,15 +43,19 @@ def main(args=None):
         .arguments\
             .validate_with_args_parse(parser, args)\
         .build()
-    print(f"Main app created: {main_app.name}")
-    print("MAIN_APP:", main_app)
+
+    # Get errors
     if main_app.error:
-        print("MAIN_APP_ERROR:", main_app.error)
         return main_app.error
+
+    # Run main app
     main_app.run()
+
+    # Get command execution history
     history = main_app.context.command_queue.get_history()
-    print("MAIN_APP_HISTORY:", history)
-    print(f"Finished running main_app.")
+    print("Command history: ", history)
+
+    # Return command execution history
     return history
 
 # Get current name and version from config
@@ -66,6 +69,4 @@ def get_version() -> str:
 
 
 if __name__ == "__main__":
-    # Note: sys.argv might have to be removed from here.
-    # Depends on how pip installs the package.
     main(sys.argv[1:])
