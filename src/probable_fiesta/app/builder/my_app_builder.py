@@ -1,9 +1,8 @@
 """App builder class."""
 import sys
-from .app import MyApp
+#from .app import MyApp
 
 class MyApp:
-
     def __init__(self):
         self.context = None
         self.name = None
@@ -23,7 +22,6 @@ class MyApp:
         return self.context.command_queue.run_all()
 
 class MyAppBuilder:
-
     def __init__(self, my_app=None):
         if my_app is None:
             self.my_app = MyApp()
@@ -131,7 +129,6 @@ class MyAppArgsBuilder(MyAppBuilder):
     
     def get_valid_args(self):
         return self.my_app.validated_args
-
 
 class MyAppConfigBuilder(MyAppBuilder):
     def __init__(self, my_app):

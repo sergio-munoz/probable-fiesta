@@ -36,6 +36,9 @@ class Command:
     class Factory():
         @staticmethod
         def new_command(name, function, args):
+            if function is None:
+                LOG.error("Missing function")
+                return None
             return Command(name, function, args)
     
     factory = Factory()

@@ -18,12 +18,15 @@ class CommandQueue():
 
     # TODO: merge add and add_new_command
     def add(self, command):
-        self.queue.append(command)
-        self.length += 1
+        if command is not None:
+            self.queue.append(command)
+            self.length += 1
 
     def add_new_command(self, name, function, args):
-        self.queue.append(CommandFactory().new_command(name, function, args))
-        self.length += 1
+        c = CommandFactory().new_command(name, function, args)
+        if c is not None:
+            self.queue.append(c)
+            self.length += 1
 
     def remove(self, command):
         removed = self.queue.remove(command)
@@ -63,7 +66,11 @@ class CommandQueue():
         return self.queue
 
     def __str__(self):
-        return f"CommandQueue length: {self.length}"
+        return f"CommandQueue: {self.queue} length: {self.length} history: {self.history}"
+
+    def print_queue(self):
+        for c in self.queue:
+            print(c)
 
     @staticmethod
     def new_empty():
