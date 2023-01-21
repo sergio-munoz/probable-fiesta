@@ -53,7 +53,7 @@ def main(args=None):
 
     # Get command execution history
     history = main_app.context.command_queue.get_history()
-    print("Command history: ", history)
+    print(history)
 
     # Return command execution history
     return history

@@ -17,7 +17,7 @@ def main():
             .set_variable('VERSION', '0.0.1')\
         .build()
     
-    print(config)  #log this
+    print("config: ", config)  #log this
     return config
 
 if __name__ == "__main__":

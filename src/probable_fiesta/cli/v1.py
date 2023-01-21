@@ -29,7 +29,6 @@ class MyArgumentParser(argparse.ArgumentParser):
             return result
         try:
             result = super().parse_args(*args, **kwargs)
-            print(result)
         except SystemExit:
             pass
         return result

@@ -27,7 +27,6 @@ class App:
 
     def run_command_list(self):
         for command in self.command_list:
-            print(command)
             command.invoke()
         return self
 
