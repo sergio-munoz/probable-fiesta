@@ -6,6 +6,7 @@ from ..config.variables import VariablesDef as vd
 from ..app.builder.my_app_builder import MyAppBuilder
 from ..app.builder.context_factory import ContextFactory
 from ..command.builder.command_builder import CommandBuilder
+from ..config.default_config import get_config
 from ..cli.v1 import create_argument_parser
 
 def main(args=None):
@@ -31,6 +32,9 @@ def main(args=None):
     # Create context for main_app for running commands
     context = ContextFactory.new_context(pd.NAME, command)
 
+    # Create config for main_app
+    default_config = get_config()
+
     # Create args parser
     parser = create_argument_parser()
 
@@ -42,6 +46,8 @@ def main(args=None):
             .set_context(context)\
         .arguments\
             .validate_with_args_parse(parser, args)\
+        .config\
+            .set_config(default_config)\
         .build()
 
     # Get errors

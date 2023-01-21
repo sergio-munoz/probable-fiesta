@@ -20,5 +20,10 @@ class VariablesDef():
 class DotEnvDef():
     """Default values for the dotenv config."""
     # This has precedence over the PackageDefaults
-    PACKAGE_NAME = 'probable_fiesta'
-    # Add more variables here
+    def __init__(self):
+        self.PACKAGE_NAME = 'probable_fiesta'
+        self.PACKAGE_VERSION = '0.0.1'
+        # Add more variables here
+    
+    def __iter__(self):
+        return iter(self.__dict__)

@@ -14,6 +14,8 @@ class MyApp:
         self.args_parse = None  # required by args
         self.args = None
 
+        self.config = None
+
     def __str__(self):
         return f"MyApp: {self.context} {self.name} {self.error} {self.validated_args} {self.args_parse} {self.args}"
 
@@ -39,6 +41,10 @@ class MyAppBuilder:
     @property
     def arguments(self):
         return MyAppArgsBuilder(self.my_app)
+
+    @property
+    def config(self):     
+        return MyAppConfigBuilder(self.my_app)
 
     def build(self):
         return self.my_app
@@ -125,3 +131,12 @@ class MyAppArgsBuilder(MyAppBuilder):
     
     def get_valid_args(self):
         return self.my_app.validated_args
+
+
+class MyAppConfigBuilder(MyAppBuilder):
+    def __init__(self, my_app):
+        super().__init__(my_app)
+
+    def set_config(self, config):
+        self.my_app.config = config
+        return self

@@ -3,10 +3,11 @@ class Config():
         self.package = {}
         self.logger = {}
         self.variables = {}
-        self.dotenv = None
+        self.dotenv = {}
+        self.parsed_dotenv = {}
 
     def __str__(self):
-        return f"Config: {self.package}, {self.logger}, {self.variables}"
+        return f"Config: {self.__dict__}"
 
 class ConfigBuilder():
     def __init__(self, config=None):
@@ -26,6 +27,10 @@ class ConfigBuilder():
     @property
     def variables(self):
         return ConfigVariables(self.config)
+
+    @property
+    def dotenv(self):
+        return ConfigDotEnv(self.config)
 
     def build(self):
         return self.config
@@ -86,12 +91,23 @@ class ConfigDotEnv(ConfigBuilder):
     def __init__(self, config):
         super().__init__(config)
 
-    def get_from_dotenv(self):
+    def load_dotenv(self):
         try:
-            import dotenv
+            import dotenv as _dotenv
         except ImportError:
             print("Warning: dotenv package not installed.")
-            dotenv = None
-        if dotenv is not None:
-            self.config.dotenv.update(dotenv.load_dotenv())
+            self.dotenv = None
+        if _dotenv is not None:
+            _dotenv.load_dotenv()
+        return self
+    
+    def get_var(self, var_name):
+        import os
+        if os.getenv(var_name) is not None:
+            self.config.parsed_dotenv[var_name] = os.getenv(var_name)
+        return self
+
+    def set_vars(self, vars):
+        for var in vars:
+            self.get_var(var)
         return self
