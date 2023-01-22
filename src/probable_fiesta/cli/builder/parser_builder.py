@@ -26,15 +26,14 @@ class ParserBuilderParser(ParserBuilder):
 
     def create_new_args_parser(self):
         self.args_parser = Parser.Factory.new_parser()
-        print("Created new argsparse: ", self.args_parser)
         return self
 
     def get_args_parser(self):
         return self.args_parser.parser
 
-    def add_argument(self, short_flag, long_flag=None, action=None, help=None):
-        print("adding argument to argsparse: ", self.args_parser)
-        self.args_parser.add_argument(short_flag, long_flag, action=action, help=help)
+    def add_argument(self, *args, **kwargs):
+        print(f"Adding {args} to parser: {self.args_parser}")
+        self.args_parser.add_argument(*args, **kwargs)
         return self
 
     def parse_args(self, args=None):

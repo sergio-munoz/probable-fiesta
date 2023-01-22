@@ -1,16 +1,15 @@
 """CLI v1 Argument Parser."""
 import argparse
-from ..__about__ import __package_name__ as _package_name
 
 DESCRIPTION = "There's probably a fiesta somewhere."
 
-class MyArgumentParser(argparse.ArgumentParser):
+class MyArgsParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwargs):
-        super(MyArgumentParser, self).__init__(*args, **kwargs)
+        super(MyArgsParser, self).__init__(*args, **kwargs)
 
+        self.parser = None
         self.error_message = ''
-        self.result = ''
 
     def error(self, message):
         print("error: ", message)
@@ -29,18 +28,4 @@ class MyArgumentParser(argparse.ArgumentParser):
             result = super().parse_args(*args, **kwargs)
         except SystemExit:
             pass
-        self.result = result
         return result
-
-    def get_parsed_args(self):
-        return self.result
-
-def create_argument_parser():
-    # Create argument parser
-    parser = MyArgumentParser(add_help=True, description=DESCRIPTION)
-
-    # Add arguments to parser
-    parser.add_argument("--version", action='store_true', help=f"Current ${_package_name} version")
-
-    # Return parser
-    return parser

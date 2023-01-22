@@ -3,16 +3,16 @@ import sys
 
 class MyApp:
     def __init__(self):
-        self.context = None
-        self.name = None
+        self.context = None  # property
+        self.name = None  # property
+        self.arguments = None   # property
+        self.config = None  # property
+        self.args_parse = None  # property required by args
 
-        self.arguments = None # TODO build this to hold below args
         self.error = None  # required by args_parse
         self.validated_args = None  # required by args_parse
-        self.args_parse = None  # required by args
-        self.args = None
+        self.args = None ## remove
 
-        self.config = None
 
     def __str__(self):
         return f"MyApp: {self.context} {self.name} {self.error} {self.validated_args} {self.args_parse} {self.args}"
@@ -77,10 +77,6 @@ class MyAppContextBuilder(MyAppBuilder):
         self.my_app.context.command_queue = command_queue
         return self
 
-    def set_new_context(self, name=None, command_queue=None):
-        #self.my_app.context = Context.new_context(name, command_queue)
-        return self
-
 class MyAppNameBuilder(MyAppBuilder):
     def __init__(self, my_app):
         super().__init__(my_app)
@@ -101,27 +97,17 @@ class MyAppArgsBuilder(MyAppBuilder):
         self.my_app.args_parse = parser
         return self
 
-    def get_from_cli(self):
-        args = sys.argv[1:]
-        if len(args) <= 0:
-            self.my_app.args = None
-        else:
-            self.my_app.args = args
-        return self
-    
     def validate_args(self, args=None):
         if args is not None:
             self.my_app.arguments = args
 
         a = self.my_app.arguments
-        print(a)
         va = None
 
         if a:
             if self.my_app.args_parse is None:
                 raise Exception("No argument parser set.")
-            print("VALIDATING ARGS")
-            print(self.my_app.args_parse)
+            # Validate arguments with args parse
             va = self.my_app.args_parse.parse_args(a)
         else:
             va = self.my_app.args_parse.parse_args(None)
@@ -136,7 +122,6 @@ class MyAppArgsBuilder(MyAppBuilder):
         return self
 
     def validate_with_args_parse(self, args_parse, args=None):
-        #self.get_from_cli()
         self.set_args_parse(args_parse)
         self.validate_args(args)
         return self

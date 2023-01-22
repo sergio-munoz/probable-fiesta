@@ -14,10 +14,12 @@ class Parser:
         self.parser = MyArgumentParser(add_help=True, description=description)
         return self
 
-    def add_argument(self, short_flag, long_flag=None, action=None, help=None):
-        #self.parser.add_argument(short_flag, long_flag, action=action, help=help)
-
-        self.parser.add_argument("--version", action='store_true', help=f"Current version")
+    def add_argument(self, *args, **kwargs):
+        #print(args)
+        #print(*args)
+        #print(kwargs)
+        #print(*kwargs)
+        self.parser.add_argument(*args, **kwargs)
         return self
 
     def parse_args(self, args=None):

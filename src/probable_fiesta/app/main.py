@@ -7,19 +7,9 @@ from ..app.builder.my_app_builder import MyAppBuilder
 from ..app.builder.context_factory import ContextFactory
 from ..command.builder.command_builder import CommandBuilder
 from ..config.default_config import get_config
-from ..cli.v1 import create_argument_parser
 from ..command.builder.command import Command
 from ..app.builder.app_abstract_machine import AppMachine
 from ..cli.builder.parser_builder import ParserBuilder
-
-def use_app_machine(args=None):
-    print("using app machine")
-    app_machine = AppMachine()
-    my_app = app_machine.prepare_default_app()
-    print(f"Running app: {my_app}")
-    my_app.run()
-    history = my_app.context.command_queue.get_history()
-    print(history)
 
 
 def default_app_builder(name, context, args_parse, args, config):
@@ -44,6 +34,7 @@ def build_commands():
     command_builder = CommandBuilder()
     commands = command_builder.queue\
         .add_new_command("version", get_version)\
+        .add_new_command("repeat", repeat, "--this-is-repeated")\
         .build()
 
     if not commands:
@@ -71,11 +62,21 @@ def build_parser():
     parser = parserBuilder\
         .parser\
             .create_new_args_parser()\
-            .add_argument(short_flag="--version", action="store_true", help="Show version")\
+            .add_argument("--version", action="store_true", help="Show version")\
+            .add_argument("--repeat", action="store_true", help="Repeat flag")\
         .build()
     
     print("Builder parser: ", parser)
     return parser.get_args_parser()
+
+def use_app_machine(args=None):
+    print("using app machine")
+    app_machine = AppMachine()
+    my_app = app_machine.prepare_default_app()
+    print(f"\n->Running sample app: {my_app}")
+    my_app.run()
+    history = my_app.context.command_queue.get_history()
+    print(history)
 
 def main(args=None):
     """Main function for probable_fiesta app.
@@ -92,8 +93,6 @@ def main(args=None):
 
     commands = build_commands()
     context = ContextFactory.new_context(pd.NAME, commands)
-    #parser = create_argument_parser()
-    # override parser with custom parser
     parser = build_parser()
     default_config = get_config()
 
@@ -104,7 +103,7 @@ def main(args=None):
         return main_app.error
 
     # Run main app
-    print(f"Running main app: {main_app}")
+    print(f"\n->Running main app: {main_app}")
     main_app.run()
 
     # Get command execution history
@@ -123,6 +122,8 @@ def get_version() -> str:
     """
     return f"{pd.NAME} v.{vd.VERSION}"
 
+def repeat(x):
+    return(f"Repeating, {x}")
 
 if __name__ == "__main__":
     main(sys.argv[1:])

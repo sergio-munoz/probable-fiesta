@@ -3,9 +3,8 @@ from enum import Enum, auto
 from .my_app_builder import MyAppBuilder
 from ...command.builder.command_builder import CommandBuilder
 from .context_factory import ContextFactory
-from ...cli.v1 import create_argument_parser
 from ...config.default_config import get_config
-from ...cli.builder.parser_builder import ParserBuilder
+from ...cli.builder.args_parser_factory import ArgsParserFactory
 
 class App(ABC):
     def run(self):
@@ -51,28 +50,22 @@ class MyappFactory(AppFactory):
 
     def prepare_default(self):
         print("Preparing default my app sample")
-        args = ["--version"]
+        args = ["--test"]
         function = lambda x: (x)
-        # prepare app properties
+
+        # get commands
         command_builder = CommandBuilder()
         commands = command_builder.queue\
             .add_new_command("test", function, args)\
             .build()
+
+        # get context
         context = ContextFactory().new_context("default", commands)
         context.command_queue.print_queue()
 
-        parserBuilder = ParserBuilder()
-        parser = parserBuilder\
-        .parser\
-            .create_new_args_parser()\
-        .build()
+        args_parser = ArgsParserFactory().new("--test", action='store_true', help=f"Current version")
 
-        print("PARSER: ", parser)
-
-        # get args parser
-        args_parser = parser.get_args_parser()
-        print("ARGS PARSER: ", args_parser)
-
+        # get config
         config = get_config()
 
         # create app
