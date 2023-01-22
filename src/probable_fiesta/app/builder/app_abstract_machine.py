@@ -5,6 +5,7 @@ from ...command.builder.command_builder import CommandBuilder
 from .context_factory import ContextFactory
 from ...cli.v1 import create_argument_parser
 from ...config.default_config import get_config
+from ...cli.builder.parser_builder import ParserBuilder
 
 class App(ABC):
     def run(self):
@@ -59,8 +60,21 @@ class MyappFactory(AppFactory):
             .build()
         context = ContextFactory().new_context("default", commands)
         context.command_queue.print_queue()
-        args_parse = create_argument_parser()
+
+        parserBuilder = ParserBuilder()
+        parser = parserBuilder\
+        .parser\
+            .create_new_args_parser()\
+        .build()
+
+        print("PARSER: ", parser)
+
+        # get args parser
+        args_parser = parser.get_args_parser()
+        print("ARGS PARSER: ", args_parser)
+
         config = get_config()
+
         # create app
         my_app_builder = MyAppBuilder()
         my_app = my_app_builder\
@@ -68,8 +82,11 @@ class MyappFactory(AppFactory):
                 .set_name("sample app")\
             .context\
                 .set_context(context)\
+            .args_parse\
+                .set_args_parse(args_parser)\
             .arguments\
-                .validate_with_args_parse(args_parse, args)\
+                .set_arguments(args)\
+                .validate_args()\
             .config\
                 .set_config(config)\
             .build()
@@ -84,8 +101,10 @@ class MetricsappFactory(AppFactory):
                 .set_name(name)\
             .context\
                 .set_context(context)\
+            .args_parse\
+                .set_args_parse(args_parse)\
             .arguments\
-                .validate_with_args_parse(args_parse, args)\
+                .set_arguments(args)\
             .config\
                 .set_config(config)\
             .build()

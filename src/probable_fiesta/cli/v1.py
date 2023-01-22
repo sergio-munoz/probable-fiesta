@@ -4,13 +4,12 @@ from ..__about__ import __package_name__ as _package_name
 
 DESCRIPTION = "There's probably a fiesta somewhere."
 
-
-# sub class ArgumentParser to catch an error message and prevent application from closing
 class MyArgumentParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwargs):
         super(MyArgumentParser, self).__init__(*args, **kwargs)
 
+        self.parser = None
         self.error_message = ''
         self.result = ''
 
@@ -31,6 +30,7 @@ class MyArgumentParser(argparse.ArgumentParser):
             result = super().parse_args(*args, **kwargs)
         except SystemExit:
             pass
+        self.result = result
         return result
 
     def get_parsed_args(self):

@@ -1,6 +1,5 @@
 """App builder class."""
 import sys
-#from .app import MyApp
 
 class MyApp:
     def __init__(self):
@@ -44,11 +43,23 @@ class MyAppBuilder:
     def config(self):     
         return MyAppConfigBuilder(self.my_app)
 
+    @property
+    def args_parse(self):
+        return MyAppArgsParseBuilder(self.my_app)
+
     def build(self):
         return self.my_app
 
     def run(self):
         return self.my_app.run()
+
+class MyAppArgsParseBuilder(MyAppBuilder):
+    def __init__(self, my_app):
+        super().__init__(my_app)
+
+    def set_args_parse(self, args_parse):
+        self.my_app.args_parse = args_parse
+        return self
 
 class MyAppContextBuilder(MyAppBuilder):
     def __init__(self, my_app):
@@ -103,11 +114,14 @@ class MyAppArgsBuilder(MyAppBuilder):
             self.my_app.arguments = args
 
         a = self.my_app.arguments
+        print(a)
         va = None
 
         if a:
             if self.my_app.args_parse is None:
                 raise Exception("No argument parser set.")
+            print("VALIDATING ARGS")
+            print(self.my_app.args_parse)
             va = self.my_app.args_parse.parse_args(a)
         else:
             va = self.my_app.args_parse.parse_args(None)

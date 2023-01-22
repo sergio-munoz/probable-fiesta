@@ -10,6 +10,7 @@ from ..config.default_config import get_config
 from ..cli.v1 import create_argument_parser
 from ..command.builder.command import Command
 from ..app.builder.app_abstract_machine import AppMachine
+from ..cli.builder.parser_builder import ParserBuilder
 
 def use_app_machine(args=None):
     print("using app machine")
@@ -29,8 +30,11 @@ def default_app_builder(name, context, args_parse, args, config):
             .set_name(name)\
         .context\
             .set_context(context)\
+        .args_parse\
+            .set_args_parse(args_parse)\
         .arguments\
-            .validate_with_args_parse(args_parse, args)\
+            .set_arguments(args)\
+            .validate_args()\
         .config\
             .set_config(config)\
         .build()
@@ -62,6 +66,17 @@ def build_commands():
                     .build()
     return commands
 
+def build_parser():
+    parserBuilder = ParserBuilder()
+    parser = parserBuilder\
+        .parser\
+            .create_new_args_parser()\
+            .add_argument(short_flag="--version", action="store_true", help="Show version")\
+        .build()
+    
+    print("Builder parser: ", parser)
+    return parser.get_args_parser()
+
 def main(args=None):
     """Main function for probable_fiesta app.
 
@@ -77,7 +92,9 @@ def main(args=None):
 
     commands = build_commands()
     context = ContextFactory.new_context(pd.NAME, commands)
-    parser = create_argument_parser()
+    #parser = create_argument_parser()
+    # override parser with custom parser
+    parser = build_parser()
     default_config = get_config()
 
     main_app = default_app_builder(pd.NAME, context, parser, args, default_config)
