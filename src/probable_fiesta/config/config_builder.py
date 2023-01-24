@@ -1,7 +1,9 @@
+from ..logger.builder.logger_factory import LoggerFactory
+
 class Config():
     def __init__(self):
         self.package = {}
-        self.logger = {}
+        self.logger = None
         self.variables = {}
         self.dotenv = {}
         self.parsed_dotenv = {}
@@ -15,6 +17,9 @@ class ConfigBuilder():
             self.config = Config()
         else:
             self.config = config
+    @property
+    def my_logger(self):
+        return ConfigMyLogger(self.config)
 
     @property
     def package(self):
@@ -52,23 +57,28 @@ class ConfigLogger(ConfigBuilder):
         super().__init__(config)
 
     def set_logger_level(self, level):
-        self.config.logger['level'] = level
+        self.config.logger = level
         return self
 
     def set_logger_dir(self, directory):
-        self.config.logger['directory'] = directory
+        self.config.logger = directory
         return self
 
     def set_logger_format(self, log_format):
-        self.config.logger['format'] = log_format
+        self.config.logger = log_format
         return self
 
     def set_logger_name(self, name):
-        self.config.logger['name'] = name
+        self.config.logger.name = name
         return self
 
-    def get_logger_level(self):
-        return f"{self.config.logger['level']}".capitalize()
+    def set_logger(self, logger):
+        self.config.logger = logger
+        return self
+
+    def set_new_logger(self, name=None, level=None, fmt=None, directory=None):
+        self.config.logger = LoggerFactory.new_logger(name, level, fmt, directory)
+        return self
 
 
 class ConfigVariables(ConfigBuilder):

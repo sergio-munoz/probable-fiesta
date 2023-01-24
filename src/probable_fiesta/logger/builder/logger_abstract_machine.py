@@ -1,32 +1,52 @@
 from abc import ABC
 from enum import Enum, auto
-from .my_app_builder import MyAppBuilder
-from ...command.builder.command_builder import CommandBuilder
-from .context_factory import ContextFactory
-from ...config.config_factory import ConfigFactory
-from ...cli.builder.args_parser_factory import ArgsParserFactory
+#from .my_app_builder import MyAppBuilder
+#from ...command.builder.command_builder import CommandBuilder
+#from .context_factory import ContextFactory
+#from ...config.default_config import get_config
+#from ...config.
+#from ...cli.builder.args_parser_factory import ArgsParserFactory
 
-class App(ABC):
-    def run(self):
+from .logger_factory import LoggerFactory
+
+class AbstractLogger(ABC):
+    def get(self):
         pass
 
-class MyApp(App):
-    def run(self):
-        print("This is the my app")
+class LoggerDefault(AbstractLogger):
+    def get(self):
+        print("Getting default logger")
 
-class MetricsApp(App):
-    def run(self):
-        print("This is the metrics app")
+class LoggerFlask(AbstractLogger):
+    def get(self):
+        print("Getting flask logger")
 
-class AppFactory(ABC):
-    def create_app(self, name, context, args_parse, args, config):
+class LoggerAbstractFactory(ABC):
+    def create_logger(self, name, level, fmt, directory):
         pass
 
-    def prepare(self):
+    def get(self):
         pass
-    
-    def prepare_default(self):
-        pass
+
+class LoggerDefaultFactory(LoggerAbstractFactory):
+    def create_logger(self, name, level, fmt, directory):
+        print("Creating default logger")
+        logger = LoggerFactory().new_logger(name, level, fmt, directory)
+        return logger
+
+    def get(self):
+        print("Getting default logger")
+        return LoggerDefault()
+
+class LoggerFlaskFactory(LoggerAbstractFactory):
+    def create_logger(self, name, level, fmt, directory):
+        print("Creating flask logger")
+        logger = LoggerFactory().new_logger(name, level, fmt, directory)
+        return logger
+
+    def get(self):
+        print("Getting flask logger")
+        return LoggerFlask()
 
 class MyappFactory(AppFactory):
     def create_app(self, name, context, args_parse, args, config):
@@ -53,40 +73,6 @@ class MyappFactory(AppFactory):
         args = ["--test"]
         function = lambda x: (x)
 
-        # get commands
-        command_builder = CommandBuilder()
-        commands = command_builder.queue\
-            .add_new_command("test", function, args)\
-            .build()
-
-        # get context
-        context = ContextFactory().new_context("default", commands)
-        context.command_queue.print_queue()
-
-        args_parser = ArgsParserFactory().new("--test", action='store_true', help=f"Current version")
-
-        # get config
-        #config = get_config()
-        config = ConfigFactory.new_default_config_builder()
-
-        # create app
-        my_app_builder = MyAppBuilder()
-        my_app = my_app_builder\
-            .name\
-                .set_name("sample app")\
-            .context\
-                .set_context(context)\
-            .args_parse\
-                .set_args_parse(args_parser)\
-            .arguments\
-                .set_arguments(args)\
-                .validate_args()\
-            .config\
-                .set_config(config)\
-            .build()
-        return my_app
-
-class MetricsappFactory(AppFactory):
     def create_app(self, name, context, args_parse, args, config):
         print("Creating metrics app")
         my_app_builder = MyAppBuilder()

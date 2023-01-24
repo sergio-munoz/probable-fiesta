@@ -1,5 +1,5 @@
-from .config_factory import ConfigBuilderFactory
+from .config_factory import ConfigFactory
 
 def get_config():
-    default_config = ConfigBuilderFactory().new_default_config_builder()
+    default_config = ConfigFactory().new_default_config_builder()
     return default_config
