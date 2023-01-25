@@ -1,15 +1,10 @@
 """Unit test file for logger.builder.logger.py."""
 from src.probable_fiesta.logger.builder import logger
 
-from logging import DEBUG
 from unittest import TestCase
 
-# Create a logger
-#LOG = set_logger("test_logger", DEBUG)
-
 import os
-
-root_dir = os.getcwd()
+ROOT_DIR = str(os.path.dirname(os.path.abspath(__file__)).rsplit("/tests")[0])
 
 class TestLogger(TestCase):
 
@@ -33,9 +28,9 @@ class TestLogger(TestCase):
     def test_new(self):
         print("Test new")
         log_name = "test_logger"
-        log_level = DEBUG
+        log_level = "DEBUG"
         log_fmt = 'simple'
-        log_directory = '/logs'
+        log_directory = ROOT_DIR+'/tests/logs'
 
         self.logger = logger.Logger().new(log_name, log_level, log_fmt, log_directory)
 
@@ -55,10 +50,38 @@ class TestLogger(TestCase):
     def test_get_logger(self):
         print("Test get_logger")
         log_name = "test_logger"
-        log_level = DEBUG
+        log_level = "DEBUG"
         log_fmt = 'simple'
-        log_directory = root_dir+'/tests/logs'
+        log_directory = ROOT_DIR+'/tests/logs'
         self.logger = logger.Logger().new(log_name, log_level, log_fmt, log_directory)
         parsed_logger = self.logger.get_logger()
-        print(parsed_logger)
         self.assertEqual(str(parsed_logger.__class__), "<class 'logging.RootLogger'>")
+
+    def test_new_logger(self):
+        print("Test new_logger")
+        log_name = "test_logger"
+        log_level = "DEBUG"
+        log_fmt = 'simple'
+        log_directory = ROOT_DIR+'/tests/logs'
+        self.logger = logger.Logger().new_logger(log_name, log_level, log_fmt, log_directory)
+        self.assertEqual(str(self.logger.__class__), "<class 'logging.RootLogger'>")
+
+    def test_factory_new(self):
+        print("Test factory new")
+        log_name = "test_logger"
+        log_level = "DEBUG"
+        log_fmt = 'simple'
+        log_directory = ROOT_DIR+'/tests/logs'
+        self.logger = logger.Logger().Factory.new(log_name, log_level, log_fmt, log_directory)
+        self.assertEqual(str(self.logger.name), "test_logger")
+
+    def test_factory_create_file_handler(self):
+        print("Test factory create_file_handler")
+        log_name = "test_logger"
+        log_level = "DEBUG"
+        log_fmt = 'simple'
+        log_directory = ROOT_DIR+'/tests/logs'
+        self.logger = logger.Logger().Factory.new(log_name, log_level, log_fmt, log_directory)
+        file_handler = self.logger.create_file_handler()
+        factory_file_handler = logger.Logger().Factory.create_file_handler(log_name, log_level, log_fmt, log_directory)
+        self.assertEqual(file_handler.name, factory_file_handler.name)

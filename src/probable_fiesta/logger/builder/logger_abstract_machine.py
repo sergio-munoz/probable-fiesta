@@ -1,11 +1,5 @@
 from abc import ABC
 from enum import Enum, auto
-#from .my_app_builder import MyAppBuilder
-#from ...command.builder.command_builder import CommandBuilder
-#from .context_factory import ContextFactory
-#from ...config.default_config import get_config
-#from ...config.
-#from ...cli.builder.args_parser_factory import ArgsParserFactory
 
 from .logger_factory import LoggerFactory
 
@@ -39,9 +33,9 @@ class LoggerDefaultFactory(LoggerAbstractFactory):
         return LoggerDefault()
 
 class LoggerFlaskFactory(LoggerAbstractFactory):
-    def create_logger(self, name, level, fmt, directory):
+    def create_logger(self, app, name, level, fmt, directory):
         print("Creating flask logger")
-        logger = LoggerFactory().new_logger(name, level, fmt, directory)
+        logger = LoggerFactory().new_logger_flask(app, name, level, fmt, directory)
         return logger
 
     def get(self):
@@ -51,47 +45,10 @@ class LoggerFlaskFactory(LoggerAbstractFactory):
 class MyappFactory(AppFactory):
     def create_app(self, name, context, args_parse, args, config):
         print("Creating my app")
-        my_app_builder = MyAppBuilder()
-        my_app = my_app_builder\
-            .name\
-                .set_name(name)\
-            .context\
-                .set_context(context)\
-            .arguments\
-                .validate_with_args_parse(args_parse, args)\
-            .config\
-                .set_config(config)\
-            .build()
         return my_app
 
-    def prepare(self):
-        print("Preparing my app")
-        return MyApp
-
-    def prepare_default(self):
-        print("Preparing default my app sample")
-        args = ["--test"]
-        function = lambda x: (x)
-
-    def create_app(self, name, context, args_parse, args, config):
-        print("Creating metrics app")
-        my_app_builder = MyAppBuilder()
-        my_app = my_app_builder\
-            .name\
-                .set_name(name)\
-            .context\
-                .set_context(context)\
-            .args_parse\
-                .set_args_parse(args_parse)\
-            .arguments\
-                .set_arguments(args)\
-            .config\
-                .set_config(config)\
-            .build()
-        return my_app
-
-    def prepare(self):
-        msg = "Preparing metrics app"
+    def get(self):
+        msg = "Preparing flask logger"
         print(msg)
         return msg
 
