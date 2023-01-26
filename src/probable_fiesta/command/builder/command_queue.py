@@ -1,13 +1,6 @@
 """Command Queue class."""
-
 from .command_factory import CommandFactory
 from .command import Command
-
-from ...logger.logging_config import set_logger
-from logging import WARN
-
-# Create a logger
-LOG = set_logger("command", WARN)
 
 class CommandQueue():
 
@@ -44,7 +37,7 @@ class CommandQueue():
 
     def run_all(self):
         if self.length <= 0:
-            LOG.warning("No commands in queue")
+            print("No commands in queue")
             return None
         elif self.length == 1:
             self.run_command(self.queue.pop())
@@ -55,7 +48,7 @@ class CommandQueue():
     
     def get_history(self):
         if len(self.history) <= 0:
-            LOG.warning("No commands in history")
+            print("No commands in history")
             return None
         elif len(self.history) == 1:
             return self.history.pop()
@@ -88,9 +81,9 @@ class CommandQueue():
             elif queue is isinstance(Command):
                 command_queue.add(queue)
             else:
-                LOG.warn("Invalid queue type: %s", type(queue))
+                print("Invalid queue type: %s", type(queue))
         else:
-            LOG.debug("Creating empty queue: %s", queue)
+            print("Creating empty queue: %s", queue)
         return command_queue
 
     class Factory():

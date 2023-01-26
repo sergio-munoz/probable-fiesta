@@ -4,58 +4,39 @@ from enum import Enum, auto
 from .logger_factory import LoggerFactory
 
 class AbstractLogger(ABC):
-    def get(self):
+    def create_logger(self):
         pass
 
 class LoggerDefault(AbstractLogger):
-    def get(self):
-        print("Getting default logger")
+    def create_logger(self):
+        pass
 
 class LoggerFlask(AbstractLogger):
-    def get(self):
-        print("Getting flask logger")
+    def create_logger(self):
+        pass
 
 class LoggerAbstractFactory(ABC):
     def create_logger(self, name, level, fmt, directory):
         pass
-
-    def get(self):
+    def create_logger(self, app, name, level, fmt, directory):
         pass
 
-class LoggerDefaultFactory(LoggerAbstractFactory):
+class DefaultFactory(LoggerAbstractFactory):
     def create_logger(self, name, level, fmt, directory):
         print("Creating default logger")
         logger = LoggerFactory().new_logger(name, level, fmt, directory)
         return logger
 
-    def get(self):
-        print("Getting default logger")
-        return LoggerDefault()
-
-class LoggerFlaskFactory(LoggerAbstractFactory):
+class FlaskFactory(LoggerAbstractFactory):
     def create_logger(self, app, name, level, fmt, directory):
         print("Creating flask logger")
         logger = LoggerFactory().new_logger_flask(app, name, level, fmt, directory)
         return logger
 
-    def get(self):
-        print("Getting flask logger")
-        return LoggerFlask()
-
-class MyappFactory(AppFactory):
-    def create_app(self, name, context, args_parse, args, config):
-        print("Creating my app")
-        return my_app
-
-    def get(self):
-        msg = "Preparing flask logger"
-        print(msg)
-        return msg
-
-class AppMachine:
-    class AvailableApps(Enum):
-        MYAPP = auto()
-        METRICSAPP = auto()
+class LoggerMachine:
+    class Available(Enum):
+        DEFAULT = auto()
+        FLASK = auto()
     
     factories = []
     initialized = False
@@ -63,48 +44,37 @@ class AppMachine:
     def __init__(self):
         if not self.initialized:
             self.initialized = True
-            for d in self.AvailableApps:
+            for d in self.Available:
                 name = d.name[0] +  d.name[1:].lower()
                 factory_name = name + "Factory"
                 factory_instance = eval(factory_name)()
                 self.factories.append((name, factory_instance))
 
     def __str__(self):
-        return f"AppMachine: Available apps: {self.factories}"
+        return f"LoggerMachine: Available loggers: {self.factories}"
 
-    def prepare_app(self):
+    def prepare_logger(self):
         print("Available apps:")
         for f in self.factories:
             print(f[0])
         s = input(f'Please pick app (0-{len(self.factories)-1}):')
         idx = int(s)
-        # specify app name
-        return self.factories[idx][1].prepare()
+        return self.factories[idx][1].get()
 
-    def prepare_default_app(self):
-        return self.factories[0][1].prepare_default()
+    def make_logger(self, type, app=None, name=None, level=None, fmt=None, directory=None):
+        if type == 'default':
+            return DefaultFactory().create_logger(name, level, fmt, directory)
+        elif type == 'flask':
+            return FlaskFactory().create_logger(app, name, level, fmt, directory)
+        else:
+            print("Invalid logger type")
+            return None
 
-def prepare_app(type):
-    if type == 'my_app':
-        return MyappFactory().prepare()
-    elif type == 'metrics_app':
-        return MetricsappFactory.prepare()
+def make_logger(type, app=None, name=None, level=None, fmt=None, directory=None):
+    if type == 'default':
+        return DefaultFactory().create_logger(name, level, fmt, directory)
+    elif type == 'flask':
+        return FlaskFactory().create_logger(app, name, level, fmt, directory)
     else:
-        print("Invalid app type")
+        print("Invalid logger type")
         return None
-
-def prepare_default_app(type):
-    if type == 'my_app':
-        return MyappFactory().prepare_default()
-    else:
-        print("Only my_app is supported")
-        return None
-
-def flow():
-    pass
-    # specify app name
-    # specify app context
-    ## specify app context command_queue
-    # specify app args
-    # specify app args_parse
-    # specify app config

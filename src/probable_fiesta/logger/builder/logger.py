@@ -19,15 +19,22 @@ class Logger:
         self.level = level
         self.fmt = fmt
         self.directory = directory
+        if self.name is None:
+            print("Name not set. Cannot create logger.")
+            return None
         _logger = logging.getLogger(self.name)
         _logger.setLevel(self.parse_level(self.level))
         if self.file_handler is None:
             self.create_file_handler()
+
         _logger.addHandler(self.file_handler)
         self.logger = _logger
         return self.logger
 
     def create_file_handler(self):
+        if self.name is None:
+            print("Name not set. Cannot create file handler.")
+            return None
         if not self.directory:
             self.directory = "./"
         _file_handler = logging.FileHandler(self.directory+f"/{self.name}.log")

@@ -1,5 +1,4 @@
 """App builder class."""
-import sys
 
 class MyApp:
     def __init__(self):

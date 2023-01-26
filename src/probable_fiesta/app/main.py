@@ -78,6 +78,7 @@ def use_app_machine(args=None):
     history = my_app.context.command_queue.get_history()
     print(history)
 
+
 def main(args=None):
     """Main function for probable_fiesta app.
 

@@ -1,11 +1,4 @@
 """Command class."""
-from ...logger.logging_config import set_logger
-
-from logging import ERROR
-
-# Create a logger
-LOG = set_logger("command", ERROR)
-
 class Command:
 
     def __init__(self, name=None, function=None, args=None):
@@ -22,7 +15,7 @@ class Command:
         elif self.function is not None and self.args is None:
             return self.function()
         else:
-            LOG.error("Missing self.function")
+            print("Missing self.function")
             return None
 
     @staticmethod
@@ -37,7 +30,7 @@ class Command:
         @staticmethod
         def new_command(name, function, args):
             if function is None:
-                LOG.error("Missing function")
+                print("Missing function")
                 return None
             return Command(name, function, args)
     

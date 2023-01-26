@@ -14,17 +14,14 @@ class MyApp(App):
     def run(self):
         print("This is the my app")
 
-class MetricsApp(App):
+class FlaskApp(App):
     def run(self):
-        print("This is the metrics app")
+        print("This is the flask app")
 
 class AppFactory(ABC):
     def create_app(self, name, context, args_parse, args, config):
         pass
 
-    def prepare(self):
-        pass
-    
     def prepare_default(self):
         pass
 
@@ -44,10 +41,6 @@ class MyappFactory(AppFactory):
             .build()
         return my_app
 
-    def prepare(self):
-        print("Preparing my app")
-        return MyApp
-
     def prepare_default(self):
         print("Preparing default my app sample")
         args = ["--test"]
@@ -65,8 +58,7 @@ class MyappFactory(AppFactory):
 
         args_parser = ArgsParserFactory().new("--test", action='store_true', help=f"Current version")
 
-        # get config
-        #config = get_config()
+        # get default config
         config = ConfigFactory.new_default_config_builder()
 
         # create app
@@ -86,10 +78,12 @@ class MyappFactory(AppFactory):
             .build()
         return my_app
 
-class MetricsappFactory(AppFactory):
+class FlaskFactory(AppFactory):
     def create_app(self, name, context, args_parse, args, config):
-        print("Creating metrics app")
+        print("Creating flask app")
         my_app_builder = MyAppBuilder()
+        config = ConfigFactory.new_config_builder('flask' , 'flask_factory').build()
+        #logger = get_config('flask', 'flask_factory')
         my_app = my_app_builder\
             .name\
                 .set_name(name)\
@@ -104,15 +98,11 @@ class MetricsappFactory(AppFactory):
             .build()
         return my_app
 
-    def prepare(self):
-        msg = "Preparing metrics app"
-        print(msg)
-        return msg
 
 class AppMachine:
     class AvailableApps(Enum):
         MYAPP = auto()
-        METRICSAPP = auto()
+        FLASK = auto()
     
     factories = []
     initialized = False
@@ -141,11 +131,11 @@ class AppMachine:
     def prepare_default_app(self):
         return self.factories[0][1].prepare_default()
 
-def prepare_app(type):
+def create_app(type):
     if type == 'my_app':
-        return MyappFactory().prepare()
+        return MyappFactory().create_app()
     elif type == 'metrics_app':
-        return MetricsappFactory.prepare()
+        return FlaskFactory().create_app()
     else:
         print("Invalid app type")
         return None
@@ -156,12 +146,3 @@ def prepare_default_app(type):
     else:
         print("Only my_app is supported")
         return None
-
-def flow():
-    pass
-    # specify app name
-    # specify app context
-    ## specify app context command_queue
-    # specify app args
-    # specify app args_parse
-    # specify app config

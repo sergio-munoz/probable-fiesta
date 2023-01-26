@@ -1,5 +1,6 @@
 import os
 from logging import INFO
+from .. import __about__
 
 class LoggerDef():
     """Default values for the logger config."""
@@ -8,6 +9,7 @@ class LoggerDef():
     DIRECTORY = f'{ROOT_DIR}/logger'    
     FORMAT = 'simple'                   
     NAME = 'main_log'
+    TYPE = 'default'
 
 class PackageDef():
     """Default values for the package config."""
@@ -15,7 +17,7 @@ class PackageDef():
 
 class VariablesDef():
     """Default values for the variables config."""
-    VERSION = '0.0.1'
+    VERSION = __about__.__version__
 
 class DotEnvDef():
     """Default values for the dotenv config."""
