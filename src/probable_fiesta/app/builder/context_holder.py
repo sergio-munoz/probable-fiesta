@@ -17,9 +17,7 @@ class ContextHolder:
             return False
         for name in self.context_holder:
             context = self.context_holder[name]
-            if context.name in parsed_args:
-                print("Validated context: ", context.name)
-            else:
-                print("No validated context: ", context.name)
+            if not context.name in parsed_args:
+                #print("No validated context: ", context.name)
                 return False
         return True

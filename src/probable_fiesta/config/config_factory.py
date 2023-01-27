@@ -15,7 +15,7 @@ class ConfigFactory:
         return ConfigBuilder().build()
 
     @staticmethod
-    def new_default_config_builder(log_type='default', log_name=None):
+    def new_default_config_builder(log_type='default', log_name='default'):
         lM = loggerMachine()
         logger = lM.make_logger(log_type, log_name)
         cB = ConfigBuilder()

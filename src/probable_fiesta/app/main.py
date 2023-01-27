@@ -15,62 +15,6 @@ from ..command.builder.command_queue import CommandQueue
 from ..cli.builder.args_parse import Parser
 
 
-def default_app_builder(name, context, args_parser, args, config):
-    my_app_builder = AppBuilder()
-    # Create main app
-    main_app = my_app_builder\
-        .name\
-            .set_name(name)\
-        .arguments\
-            .set_arguments(args)\
-        .args_parser\
-            .set_args_parser(args_parser)\
-        .context\
-            .set_context(context)\
-        .config\
-            .set_config(config)\
-        .build()
-    return main_app
-
-def build_commands():
-    command_builder = CommandBuilder()
-    commands = command_builder.queue\
-        .add_new_command("version", get_version)\
-        .add_new_command("repeat", repeat, "--this-is-repeated")\
-        .build()
-
-    if not commands:
-        print("No commands provided, using default commands: --version")
-        commands = command_builder.queue\
-            .add_new_command("version", get_version)\
-            .build()
-    else:
-        if isinstance(commands, list):
-            for command in commands:
-                command_builder.queue.add_new_command(command.name, command.function, command.args)
-            commands = command_builder.build()   
-        elif isinstance(commands, Command):
-            command_builder.queue.add_new_command(commands.name, commands.function, command.args).build()
-        else:
-            print("Commands must be a list of Command objects or a single Command object")
-            if not commands:
-                commands = command_builder.queue\
-                    .add_new_command("version", get_version)\
-                    .build()
-    return commands
-
-def build_parser():
-    parserBuilder = ParserBuilder()
-    parser = parserBuilder\
-        .parser\
-            .create_new_args_parser()\
-            .add_argument("--version", action="store_true", help="Show version")\
-            .add_argument("--repeat", action="store_true", help="Repeat flag")\
-        .build()
-    
-    print("Builder parser: ", parser)
-    return parser.get_args_parser()
-
 def use_app_machine(args=None):
     print("using app machine")
     app_machine = AppMachine()
@@ -92,7 +36,11 @@ def main(args=None):
     if not args:
         args = sys.argv[1:]
 
-    default_config = get_config()
+    default_config = get_config(log_name="probable_fiesta")
+
+    aB = AppBuilder()
+    # [oui_la_la], ["oui la la"]
+    clean_args, clean_argv = aB.arguments.clean_arg_function(args)
 
     aB = AppBuilder()
     main_app = aB\
@@ -103,6 +51,7 @@ def main(args=None):
         .args_parser\
             .add_argument("--test-app", type=str, help="test app builder")\
             .add_argument("--version", action='store_true', help="show version builder")\
+            .add_argument("--repeat", type=str, help="repeat input")\
         .context\
             .add_context(Context.Factory().new_context(
                 "test_app",
@@ -114,11 +63,16 @@ def main(args=None):
                 CommandQueue.new(
                     [CommandFactory.new_command("version", get_version, None)]
                 )))\
+            .add_context(Context.Factory().new_context(
+                "repeat",
+                CommandQueue.new(
+                    [CommandFactory.new_command("repeat", repeat, args=clean_argv[0])]
+                )))\
         .config\
             .set_config(default_config)\
         .validate()\
         .build()
-    print(main_app)
+    #print(main_app)
 
     #use_app_machine()
 
@@ -127,8 +81,8 @@ def main(args=None):
         return main_app.args_parser.error
 
     # Run main app
-    print(f"\n->Running main app: {main_app}")
-    print("WILL RUN COMMANDS:", main_app.cleaned_args)
+    #print(f"\n->Running main app: {main_app}")
+    #print("WILL RUN COMMANDS:", main_app.cleaned_args)
     for command in main_app.cleaned_args:
         main_app.run(command)
 
@@ -169,7 +123,7 @@ def get_version() -> str:
     return f"{pd.NAME} v.{vd.VERSION}"
 
 def repeat(x):
-    return(f"Repeating, {x}")
+    return(f"Repeating: {x}")
 
 if __name__ == "__main__":
     main(sys.argv[1:])

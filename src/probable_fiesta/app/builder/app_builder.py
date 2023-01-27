@@ -1,6 +1,6 @@
 """App builder module."""
 from ...cli.builder.args_parse import Parser
-from .context_holder import ContextHolder, Context
+from .context_holder import ContextHolder
 
 class App:
     def __init__(self):
@@ -15,6 +15,7 @@ class App:
         self.error = None
         self.run_history = []
         self.cleaned_args = []
+        self.cleaned_argv = []
 
     def __str__(self):
         return f"App: {self.__dict__}"
@@ -45,26 +46,26 @@ class App:
     def run(self, name=None):
         if not self.valid:
             print("App is not valid.\nTrying to run anyway.")
-            print(self.context)
+            #print(self.context)
             command_queue = self.context.command_queue.run_all()
-            print("Command Queue: ", command_queue)
+            #print("Command Queue: ", command_queue)
             self.run_history.append(command_queue.get_history())
             return
-        print("App is valid")
+        #print("App is valid")
         if name is None:
-            print("Running all commands")
+            #print("Running all commands")
             for name in self.context.context_holder.keys():
-                print("Running command for context: ", name)
+                #print("Running command for context: ", name)
                 context = self.context.context_holder[name]
-                print("context: ", context)
+                #print("context: ", context)
                 context_run = context.command_queue.run_all()
-                print("context run: ", context_run)
+                #print("context run: ", context_run)
                 context_run_history = context_run.get_history()
                 self.run_history.append(context_run_history)
             return
-        print("Running one command for context: ", name)
+        #print("Running one command for context: ", name)
         command_queue = self.context.context_holder[name].command_queue.run_all()
-        print("Command Queue: ", command_queue)
+        #print("Command Queue: ", command_queue)
         self.run_history.append(command_queue.get_history())
         return self
 
@@ -161,17 +162,27 @@ class AppArgumentsBuilder(AppBuilder):
         return self
 
     def clean_arguments(self, arguments):
-        self.app.cleaned_args = []
-        for x in arguments:
+        #self.app.cleaned_args = []
+        #self.app.cleaned_argv = []
+        self.app.cleaned_args, self.app.cleaned_argv = self.clean_arg_function(arguments)
+        return self
+
+    @staticmethod
+    def clean_arg_function(arguments: list):
+        args = []
+        argv = []
+        for x in arguments:  # TODO validate type
             if x.startswith('--'):
-                print("Cleaning x: ", x)
-                self.app.cleaned_args.append(x.replace('--', '',2).replace('-', '_'))
+                #print("Cleaning x: ", x)
+                args.append(x.replace('--', '',2).replace('-', '_'))
             elif x.startswith('-'):
-                self.app.cleaned_args.append(x.replace('-', '',1).replace('-', '_'))
-                print("Cleaning x: ", x)
+                argv.append(x.replace('-', '',1).replace('-', '_'))
+                #print("Cleaning x: ", x)
             else:
-                print("Skipping x: ", x)
-        return self.app.cleaned_args
+                argv.append(x)
+                #print("Skipping x: ", x)
+        return args, argv
+
 
 class MyAppConfigBuilder(AppBuilder):
     def __init__(self, app):

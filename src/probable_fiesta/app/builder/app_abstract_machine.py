@@ -59,7 +59,7 @@ class MyappFactory(AppFactory):
         args_parser = ArgsParserFactory().new("--test", action='store_true', help=f"Current version")
 
         # get default config
-        config = ConfigFactory.new_default_config_builder()
+        config = ConfigFactory.new_default_config_builder('default', 'myapp_factory')
 
         # create app
         my_app_builder = MyAppBuilder()
