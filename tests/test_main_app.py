@@ -12,9 +12,6 @@ from unittest import TestCase
 # Create a logger if needed for testing cases
 LOG_TEST = set_logger("test_main_app", DEBUG)  # Defaults as INFO
 
-
-
-
 class TestMainApp(TestCase):
 
     def setUp(self):

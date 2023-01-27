@@ -59,7 +59,7 @@ class CommandQueue():
         return self.queue
 
     def __str__(self):
-        return f"CommandQueue: {self.queue} length: {self.length} history: {self.history}"
+        return f'CommandQueue: loaded commands: {self.length} executed commands: {self.history} '
 
     def print_queue(self):
         for c in self.queue:
@@ -73,12 +73,15 @@ class CommandQueue():
     def new(queue):
         command_queue = CommandQueue()
         if queue is not None:
-            if queue is isinstance(list):
+            if isinstance(queue, list):
                 for command in queue:
-                    command_queue.add(command)
-            elif queue is isinstance(CommandQueue):
+                    if not isinstance(command, Command):
+                        print("Invalid command type: %s", type(command))
+                    else:
+                        command_queue.add(command)
+            elif isinstance(queue, CommandQueue):
                 command_queue = queue
-            elif queue is isinstance(Command):
+            elif isinstance(queue, Command):
                 command_queue.add(queue)
             else:
                 print("Invalid queue type: %s", type(queue))

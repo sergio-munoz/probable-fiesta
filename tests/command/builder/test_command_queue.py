@@ -26,7 +26,8 @@ class TestCommandBuilderCommandQueue(TestCase):
         self.command_queue.add_new_command("test", function, "--version")
         # test _str__
         LOG.debug(str(self.command_queue))
-        self.assertEqual(str(self.command_queue), "CommandQueue length: 1")
+        exp = "CommandQueue: loaded commands: 1 executed commands: [] "
+        self.assertEqual(str(self.command_queue), exp)
     
     def test_show(self):
         LOG.info("Test show")
@@ -48,7 +49,7 @@ class TestCommandBuilderCommandQueue(TestCase):
         self.command_queue.add_new_command("test1", function, args)
         self.command_queue.add_new_command("test2", function, args)
         self.command_queue.run_all()
-        self.assertEqual(str(self.command_queue), "CommandQueue length: 0")
+        self.assertEqual(str(self.command_queue), "CommandQueue: loaded commands: 0 executed commands: ['--version', '--version'] ")
 
     def test_get_history(self):
         LOG.info("Test get history")

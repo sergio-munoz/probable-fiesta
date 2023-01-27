@@ -10,6 +10,9 @@ class CommandBuilder:
         else:
             self.command_queue = CommandQueue()
 
+    def __str__(self):
+        return f"CommandBuilder: {self.__dict__}"
+
     @property
     def queue(self):
         return CommandBuilderQueue(self.command_queue)

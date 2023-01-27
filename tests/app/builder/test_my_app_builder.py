@@ -51,3 +51,4 @@ class TestAppBuilderMyAppBuilder(TestCase):
         if not args:
             stdout = f"no args."
         self.assertEqual(args.version, True)
+        

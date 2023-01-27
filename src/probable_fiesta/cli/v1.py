@@ -10,7 +10,6 @@ class MyArgumentParser(argparse.ArgumentParser):
         super(MyArgumentParser, self).__init__(*args, **kwargs)
 
         self.error_message = ''
-        self.result = ''
 
     def error(self, message):
         print("error: ", message)
@@ -29,11 +28,7 @@ class MyArgumentParser(argparse.ArgumentParser):
             result = super().parse_args(*args, **kwargs)
         except SystemExit:
             pass
-        self.result = result
         return result
-
-    def get_parsed_args(self):
-        return self.result
 
 def create_argument_parser():
     # Create argument parser

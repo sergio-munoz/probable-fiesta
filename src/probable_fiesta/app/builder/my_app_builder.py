@@ -1,4 +1,4 @@
-"""App builder class."""
+"""My App builder class."""
 
 class MyApp:
     def __init__(self):
@@ -12,12 +12,57 @@ class MyApp:
         self.validated_args = None  # required by args_parse
         self.args = None ## remove
 
+        self.context_holder = {}  # hold context
 
     def __str__(self):
         return f"MyApp: {self.context} {self.name} {self.error} {self.validated_args} {self.args_parse} {self.args}"
 
     def run(self):
         return self.context.command_queue.run_all()
+
+    def add_context(self, context):
+        if not context.name in self.context_holder.keys():
+            self.context_holder[context.name] = context
+        print("Context already exists: ", context.name)
+
+    def is_valid(self):
+        print("Will validate app here")
+        if not self.validated_args:
+            print("No validated args")
+            return False
+        for name in self.context_holder.keys():
+            failed = False
+            if not name in self.validated_args:
+                print("No validated args for context: ", name)
+                failed = True
+            else:
+                # Map validated args to context name in context_holder
+                self.add_context()
+        return not failed  # negate answer
+
+    def run_all_commands(self):
+        print("Will run command here")
+        if not self.is_valid():
+            print("App is not valid")
+            return
+        print("App is valid")
+        stdout = []
+        for name in self.context_holder.keys():
+            print("Running command for context: ", name)
+            stdout.append(self.context_holder[name].command_queue.run_all())
+        print("stdout: ", stdout)
+        return stdout
+
+    def run(self, name):
+        print("Will run a command here")
+        if not self.is_valid():
+            print("App is not valid")
+            return
+        if not name in self.context_holder.keys():
+            print("No context for name: ", name)
+            return
+        print("App is valid")
+        return self.context_holder[name].command_queue.run_all()
 
 class MyAppBuilder:
     def __init__(self, my_app=None):
@@ -74,6 +119,10 @@ class MyAppContextBuilder(MyAppBuilder):
 
     def set_context_queue(self, command_queue):
         self.my_app.context.command_queue = command_queue
+        return self
+
+    def add_context(self, context):
+        self.my_app.add_context(context)
         return self
 
 class MyAppNameBuilder(MyAppBuilder):

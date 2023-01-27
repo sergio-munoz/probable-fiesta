@@ -6,7 +6,7 @@ class ParserBuilder:
         if args_parser is not None:
             self.args_parser = args_parser
         else:
-            self.args_parser = Parser.Factory.new_parser()
+            self.args_parser = Parser.Factory.new()
 
     @property
     def parser(self):
@@ -25,7 +25,7 @@ class ParserBuilderParser(ParserBuilder):
         return self
 
     def create_new_args_parser(self):
-        self.args_parser = Parser.Factory.new_parser()
+        self.args_parser = Parser.Factory.new()
         return self
 
     def get_args_parser(self):
