@@ -15,10 +15,14 @@ class Logger:
         return f"Logger: {self.__dict__}"
 
     def get_logger(self, name=None, level=None, fmt=None, directory=None):
-        self.name = name
-        self.level = level
-        self.fmt = fmt
-        self.directory = directory
+        if name is not None:
+            self.name = name
+        if level is not None:
+            self.level = level
+        if fmt is not None:
+            self.fmt = fmt
+        if directory is not None:
+            self.directory = directory
         if self.name is None:
             print("Name not set. Cannot create logger.")
             return None

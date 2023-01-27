@@ -54,8 +54,9 @@ class TestLogger(TestCase):
         log_fmt = 'simple'
         log_directory = ROOT_DIR+'/tests/logs'
         self.logger = logger.Logger().new(log_name, log_level, log_fmt, log_directory)
+        print(self.logger)
         parsed_logger = self.logger.get_logger()
-        self.assertEqual(str(parsed_logger.__class__), "<class 'logging.RootLogger'>")
+        self.assertEqual(str(parsed_logger.__class__), "<class 'logging.Logger'>")
 
     def test_new_logger(self):
         print("Test new_logger")
@@ -64,7 +65,7 @@ class TestLogger(TestCase):
         log_fmt = 'simple'
         log_directory = ROOT_DIR+'/tests/logs'
         self.logger = logger.Logger().new_logger(log_name, log_level, log_fmt, log_directory)
-        self.assertEqual(str(self.logger.__class__), "<class 'logging.RootLogger'>")
+        self.assertEqual(str(self.logger.__class__), "<class 'logging.Logger'>")
 
     def test_factory_new(self):
         print("Test factory new")

@@ -41,6 +41,9 @@ def main(args=None):
     aB = AppBuilder()
     # [oui_la_la], ["oui la la"]
     clean_args, clean_argv = aB.arguments.clean_arg_function(args)
+    if len(clean_argv) == 0:
+        clean_argv.append(None)
+
 
     aB = AppBuilder()
     main_app = aB\
