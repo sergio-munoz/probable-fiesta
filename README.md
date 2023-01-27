@@ -1,5 +1,7 @@
 # probable-fiesta
 
+[![Python application](https://github.com/sergio-munoz/probable-fiesta/actions/workflows/python_app.yml/badge.svg)](https://github.com/sergio-munoz/probable-fiesta/actions/workflows/python_app.yml) [![Upload Python Package Production](https://github.com/sergio-munoz/probable-fiesta/actions/workflows/python_publish.yml/badge.svg)](https://github.com/sergio-munoz/probable-fiesta/actions/workflows/python_publish.yml) [![wakatime](https://wakatime.com/badge/user/1e0e8b49-a94f-431f-8ca2-93081dfb4c8b/project/0dca8cc1-046e-4345-a174-50d11cad482b.svg)](https://wakatime.com/badge/user/1e0e8b49-a94f-431f-8ca2-93081dfb4c8b/project/0dca8cc1-046e-4345-a174-50d11cad482b)
+
 > There's probably a fiesta somewhere.
 
 Python Package Core 
@@ -65,5 +67,3 @@ Build and a command. Pass flags, for example `--version`:
 ```bash
 ./scripts/build_install.sh & probable_fiesta --version
 ```
-
-
