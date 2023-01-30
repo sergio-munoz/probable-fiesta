@@ -25,7 +25,7 @@ class TestMainApp(TestCase):
         self.assertEqual(main_app.get_version(), expected)
 
     def test_create_command_function_version(self):
-        c = command.Command().new_with_args("version test", main_app.get_version, None)
+        c = command.Command("version test", main_app.get_version, None)
         self.app.command = c
         stdout = self.app.invoke()
         #LOG.debug(stdout)

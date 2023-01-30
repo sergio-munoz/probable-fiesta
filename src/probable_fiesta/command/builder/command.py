@@ -1,7 +1,7 @@
 """Command class."""
 class Command:
 
-    def __init__(self, name=None, function=None, args=None):
+    def __init__(self, name, function, *args):
         self.name = name
         self.function = function
         self.args = args
@@ -11,27 +11,17 @@ class Command:
 
     def invoke(self):
         if self.function is not None and self.args is not None:
-            return self.function(self.args)
-        elif self.function is not None and self.args is None:
+            if self.args[0] is not None:
+                return self.function(*self.args)
             return self.function()
-        else:
-            print("Missing self.function")
-            return None
-
-    @staticmethod
-    def new():
-        return Command(None, None, None)
-
-    @staticmethod
-    def new_with_args(name, function, args):
-        return Command(name, function, args)
+        #elif self.function is not None and self.args is None:
+            #return self.function()
+        return None
 
     class Factory():
+
         @staticmethod
-        def new_command(name, function, args):
-            if function is None:
-                print("Missing function")
-                return None
-            return Command(name, function, args)
+        def new_command(name, function, *args):
+            return Command(name, function, *args)
     
     factory = Factory()

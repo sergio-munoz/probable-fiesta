@@ -31,7 +31,7 @@ class TestCommandBuilderCommandFactory(TestCase):
         self.command = command_factory.CommandFactory().new_command("test", function, "--version")
         self.assertEqual(self.command.name, "test")
         self.assertEqual(self.command.function, function)
-        self.assertEqual(self.command.args, "--version")
+        self.assertEqual(self.command.args, ('--version',))
         # test _str__
         LOG.debug(str(self.command))
-        self.assertEqual(str(self.command), "Command: {'name': 'test', "+f"'function': {function},"+" 'args': '--version'}")
+        self.assertEqual(str(self.command), "Command: {'name': 'test', "+f"'function': {function},"+" 'args': ('--version',)}")

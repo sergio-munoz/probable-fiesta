@@ -9,14 +9,13 @@ class CommandQueue():
         self.history = []
         self.length = 0
 
-    # TODO: merge add and add_new_command
-    def add(self, command):
+    def add_command(self, command):
         if command is not None:
             self.queue.append(command)
             self.length += 1
 
-    def add_new_command(self, name, function, args):
-        c = CommandFactory().new_command(name, function, args)
+    def add_new_command(self, name, function, *args):
+        c = CommandFactory().new_command(name, function, *args)
         if c is not None:
             self.queue.append(c)
             self.length += 1
@@ -47,13 +46,16 @@ class CommandQueue():
         return self
     
     def get_history(self):
+        "Get history and clears it."
         if len(self.history) <= 0:
             print("No commands in history")
             return None
         elif len(self.history) == 1:
             return self.history.pop()
         else:
-            return self.history
+            temp = self.history
+            self.history = []
+            return temp
 
     def show(self):
         return self.queue
@@ -78,11 +80,11 @@ class CommandQueue():
                     if not isinstance(command, Command):
                         print("Invalid command type: %s", type(command))
                     else:
-                        command_queue.add(command)
+                        command_queue.add_command(command)
             elif isinstance(queue, CommandQueue):
                 command_queue = queue
             elif isinstance(queue, Command):
-                command_queue.add(queue)
+                command_queue.add_command(queue)
             else:
                 print("Invalid queue type: %s", type(queue))
         else:

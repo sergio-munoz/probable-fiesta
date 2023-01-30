@@ -69,7 +69,7 @@ def main(args=None):
             .add_context(Context.Factory().new_context(
                 "repeat",
                 CommandQueue.new(
-                    [CommandFactory.new_command("repeat", repeat, args=clean_argv[0])]
+                    [CommandFactory.new_command("repeat", repeat, clean_argv[0])]
                 )))\
         .config\
             .set_config(default_config)\
