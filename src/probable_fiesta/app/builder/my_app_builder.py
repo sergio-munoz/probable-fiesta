@@ -64,6 +64,15 @@ class MyApp:
         print("App is valid")
         return self.context_holder[name].command_queue.run_all()
 
+    def get_arg(self, name):
+        arg = self.args_parse.get_parsed_arg(name)
+        if arg is None:
+            try:
+                self.config.parsed_dotenv[name]
+            except KeyError:
+                print("No arg or dotenv config set for: ", name)
+        return arg
+
 class MyAppBuilder:
     def __init__(self, my_app=None):
         if my_app is None:

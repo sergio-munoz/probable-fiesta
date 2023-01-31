@@ -14,19 +14,17 @@ class Parser:
         return f"Parser: {self.__dict__}"
 
     def add_argument(self, *args, **kwargs):
-        #print(args)
-        #print(*args)
-        #print(kwargs)
-        #print(*kwargs)
         self.parser.add_argument(*args, **kwargs)
         return self
 
-    #def parse_args(self, args):
-        #self.parsed_args = self.parser.parse_args(args)
-        #return self
-
     def get_parsed_args(self):
-        return self.parsed_args
+        return self.parsed_args 
+
+    def get_parsed_arg(self, arg):
+        try:
+            return self.parsed_args[arg]
+        except KeyError:
+            return None
 
     def validate(self, args=None):
         self.valid = True
