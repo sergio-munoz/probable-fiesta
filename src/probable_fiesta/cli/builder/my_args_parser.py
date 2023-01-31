@@ -1,4 +1,4 @@
-"""CLI v1 Argument Parser."""
+"""My Argument Parser. Inherits from argparse.ArgumentParser."""
 import argparse
 
 DESCRIPTION = "There's probably a fiesta somewhere."

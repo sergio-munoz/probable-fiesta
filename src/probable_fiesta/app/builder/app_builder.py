@@ -1,21 +1,21 @@
 """App builder module."""
-from ...cli.builder.args_parse import Parser
+from ...cli.builder.parser import Parser
 from .context_holder import ContextHolder
 
 class App:
     def __init__(self):
         # properties
         self.name = None
-        self.args_parser = None  # validation
-        self.arguments = None  # validation
+        self.args_parser = None 
+        self.arguments = None  
         self.config = None
-        self.context = None  # context_holder  # validation
+        self.context = None  # context_holder
         # internal properties
         self.valid = False
         self.error = None
         self.run_history = []
-        self.cleaned_args = []
-        self.cleaned_argv = []
+        self.cleaned_args = {}
+        self.action_commands = []  # commands to be run from args
 
     def __str__(self):
         return f"App: {self.__dict__}"
@@ -40,8 +40,6 @@ class App:
                 print("App context is not valid")
                 local_valid = False
 
-        # validate config
-        #TODO
         self.valid = local_valid
         return self
 
@@ -50,6 +48,7 @@ class App:
             print("App is not valid.\nTrying to run anyway.")
             #print(self.context)
             if name is None:
+                # Running without cleaned arguments that match context
                 for name in self.context.context_holder.keys():
                     context = self.context.context_holder[name]
                     context_run = context.command_queue.run_all()
@@ -59,18 +58,27 @@ class App:
             command_queue = self.context.context_holder[name].command_queue.run_all()
             self.run_history.append(command_queue.get_history())
             return self
+
         #print("App is valid")
         if name is None:
+            # Run all commands from cleaned arguments that match context
+            for k in self.cleaned_args.keys():
+                print("Running command from args: ", k)
+                context_run = self.context.context_holder[k].command_queue.run_all()
+                self.run_history.append(context_run.get_history())
+
+            # enable this to run all commands regardless of args
             #print("Running all commands")
-            for name in self.context.context_holder.keys():
+            #for name in self.context.context_holder.keys():
                 #print("Running command for context: ", name)
-                context = self.context.context_holder[name]
+                #context = self.context.context_holder[name]
                 #print("context: ", context)
-                context_run = context.command_queue.run_all()
+                #context_run = context.command_queue.run_all()
                 #print("context run: ", context_run)
-                context_run_history = context_run.get_history()
-                self.run_history.append(context_run_history)
+                #context_run_history = context_run.get_history()
+                #self.run_history.append(context_run_history)
             return self
+        
         #print("Running one command for context: ", name)
         command_queue = self.context.context_holder[name].command_queue.run_all()
         #print("Command Queue: ", command_queue)
@@ -179,25 +187,73 @@ class AppArgumentsBuilder(AppBuilder):
         self.app.arguments = arguments
         return self
 
-    def clean_arguments(self, arguments):
-        self.app.cleaned_args, self.app.cleaned_argv = self.clean_arg_function(arguments)
+    def clean_arguments(self, arguments: list):
+        self.app.cleaned_args = self.clean_arg_function(arguments)
         return self
+
+    def add_action_argument(self, argument):
+        if argument not in self.app.cleaned_args:
+            print("Argument not found in cleaned args: ", argument)
+            return self
 
     @staticmethod
     def clean_arg_function(arguments: list):
-        args = []
-        argv = []
-        for x in arguments:  # TODO validate type
-            if x.startswith('--'):
-                #print("Cleaning x: ", x)
-                args.append(x.replace('--', '',2).replace('-', '_'))
-            elif x.startswith('-'):
-                argv.append(x.replace('-', '',1).replace('-', '_'))
-                #print("Cleaning x: ", x)
-            else:
-                argv.append(x)
-                #print("Skipping x: ", x)
-        return args, argv
+        def is_flag(arg: str):
+            return arg.startswith('--') or arg.startswith('-')
+        def clean_arg(argument: str):
+            if argument.startswith('--'):
+                return argument.replace('--', '', 2).replace('-', '_')
+            elif argument.startswith('-'):
+                return argument.replace('-', '', 1).replace('-', '_')
+            return argument
+
+        arg_dict = {} # dict to return
+
+        args_list = [] # internal list
+        argv_list = [] # internal list
+        # clean args and return a dict
+
+        for arg in arguments:
+            if is_flag(arg):
+                # Check remaining
+                if len(args_list) == 1:
+                    if len(argv_list) > 1:
+                        arg_dict[clean_arg(args_list.pop())] = [x for x in argv_list.pop()]
+                    elif len(argv_list) == 1:
+                        arg_dict[clean_arg(args_list.pop())] = argv_list.pop()
+                    else: # 0 or less
+                        arg_dict[clean_arg(args_list.pop())] = None
+                args_list.append(arg)
+            else: 
+                argv_list.append(arg)
+
+        if len(args_list) > 1:
+            print("Many args_list: ", args_list)
+            for x in args_list:
+                arg_dict[clean_arg(x)] = None
+            # Use the last one as the remainder for argv_list
+            if len(argv_list) > 1:
+                arg_dict[clean_arg(args_list.pop())] = [x for x in argv_list.pop()]
+            elif len(argv_list) == 1:
+                arg_dict[clean_arg(args_list.pop())] = argv_list.pop()
+            else: # 0 or less
+                arg_dict[clean_arg(args_list.pop())] = None
+
+        # normal case
+        elif len(args_list) == 1:
+            if len(argv_list) > 1:
+                arg_dict[clean_arg(args_list.pop())] = [x for x in argv_list.pop()]
+            elif len(argv_list) == 1:
+                arg_dict[clean_arg(args_list.pop())] = argv_list.pop()
+            else: # 0 or less
+                arg_dict[clean_arg(args_list.pop())] = None
+
+        else:
+            print("No args_list: ", args_list)
+            for x in argv_list:
+                arg_dict[clean_arg(x)] = None
+
+        return arg_dict
 
 
 class MyAppConfigBuilder(AppBuilder):

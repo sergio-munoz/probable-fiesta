@@ -5,18 +5,7 @@ from ..config.variables import PackageDef as pd
 from ..config.variables import VariablesDef as vd
 from ..app.builder.app_builder import AppBuilder
 from ..config.default_config import get_config
-from ..app.builder.app_abstract_machine import AppMachine
 from ..app.builder.context_factory import ContextFactory
-
-def use_app_machine(args=None):
-    print("using app machine")
-    app_machine = AppMachine()
-    my_app = app_machine.prepare_default_app()
-    print(f"\n->Running sample app: {my_app}")
-    #my_app.run()
-    #history = my_app.context.command_queue.get_history()
-    #print(history)
-
 
 def main(args=None):
     """Main function for probable_fiesta app.
@@ -31,13 +20,11 @@ def main(args=None):
 
     default_config = get_config(log_name="probable_fiesta")
 
+    # Get user cleaned args
     aB = AppBuilder()
-    # [oui_la_la], ["oui la la"]
-    clean_args, clean_argv = aB.arguments.clean_arg_function(args)
-    if len(clean_argv) == 0:
-        clean_argv.append(None)
+    arg_dict = aB.arguments.clean_arg_function(args)  # cleaned args also at main_app.cleaned_args
 
-
+    # Build main app
     aB = AppBuilder()
     main_app = aB\
         .name\
@@ -50,35 +37,28 @@ def main(args=None):
             .add_argument("--repeat", type=str, help="repeat input")\
         .context\
             .add_context(ContextFactory.new_context_one_new_command(
-                "test_app","test_app_func", lambda x: x, "repeated"))\
+                "test_app","test_app_func", lambda x: x, arg_dict['test_app'] if "test_app" in arg_dict else 'repeat'))\
             .add_context(ContextFactory.new_context_one_new_command(
                 "version", "version", get_version, None))\
             .add_context(ContextFactory.new_context_one_new_command(
-                "repeat", "repeat", repeat, clean_argv[0]))\
+                "repeat", "repeat", repeat, arg_dict['repeat'] if 'repeat' in arg_dict else None))\
         .config\
             .set_config(default_config)\
         .validate()\
         .build()
-    #print(main_app)
 
-    #use_app_machine()
-
-    # Get parser error
+    # Get parser error if any
     if main_app.args_parser.error:
         return main_app.args_parser.error
 
-    # Run main app
-    #print(f"\n->Running main app: {main_app}")
-    #print("WILL RUN COMMANDS:", main_app.cleaned_args)
-    for command in main_app.cleaned_args:
+    # Run each command on main app against user args
+    for command in main_app.cleaned_args.keys():
         main_app.run(command)
 
-    # Get command execution history new
-    history_new = main_app.get_run_history()
-    print(history_new)
-
-    # Return command execution history
-    return history_new
+    # Get command execution history
+    history = main_app.get_run_history()
+    print(history)
+    return history
 
 # Get current name and version from config
 def get_version() -> str:
