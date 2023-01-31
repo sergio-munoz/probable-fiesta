@@ -12,8 +12,7 @@ class TestLogger(TestCase):
         self.logger = None
 
     def test_init(self):
-        print("Test init")
-        self.logger = logger.Logger()
+        self.logger = logger.Logger(None, None, None, None)
 
         self.assertEqual(self.logger.name, None)
         self.assertEqual(self.logger.level, None)
@@ -26,7 +25,6 @@ class TestLogger(TestCase):
         self.assertEqual(str(self.logger), "Logger: {'name': None, 'level': None, 'fmt': None, 'directory': None, 'logger': None, 'file_handler': None}")
 
     def test_new(self):
-        print("Test new")
         log_name = "test_logger"
         log_level = "DEBUG"
         log_fmt = 'simple'
@@ -42,47 +40,41 @@ class TestLogger(TestCase):
         self.assertEqual(self.logger.file_handler, None)
 
     def test_set_logger(self):
-        print("Test set_logger")
         self.logger = logger.Logger()
         self.logger.set_logger("MY_MOCK_CLASS")
         self.assertEqual(self.logger.logger, "MY_MOCK_CLASS")
 
     def test_get_logger(self):
-        print("Test get_logger")
         log_name = "test_logger"
         log_level = "DEBUG"
         log_fmt = 'simple'
         log_directory = ROOT_DIR+'/tests/logs'
         self.logger = logger.Logger().new(log_name, log_level, log_fmt, log_directory)
-        print(self.logger)
         parsed_logger = self.logger.get_logger()
         self.assertEqual(str(parsed_logger.__class__), "<class 'logging.Logger'>")
 
-    def test_new_logger(self):
-        print("Test new_logger")
+    def test_new_get_logger(self):
         log_name = "test_logger"
         log_level = "DEBUG"
         log_fmt = 'simple'
         log_directory = ROOT_DIR+'/tests/logs'
-        self.logger = logger.Logger().new_logger(log_name, log_level, log_fmt, log_directory)
+        self.logger = logger.Logger().new_get_logger(log_name, log_level, log_fmt, log_directory)
         self.assertEqual(str(self.logger.__class__), "<class 'logging.Logger'>")
 
     def test_factory_new(self):
-        print("Test factory new")
         log_name = "test_logger"
         log_level = "DEBUG"
         log_fmt = 'simple'
         log_directory = ROOT_DIR+'/tests/logs'
-        self.logger = logger.Logger().Factory.new(log_name, log_level, log_fmt, log_directory)
+        self.logger = logger.Logger().Factory.new_logger(log_name, log_level, log_fmt, log_directory)
         self.assertEqual(str(self.logger.name), "test_logger")
 
     def test_factory_create_file_handler(self):
-        print("Test factory create_file_handler")
         log_name = "test_logger"
         log_level = "DEBUG"
         log_fmt = 'simple'
         log_directory = ROOT_DIR+'/tests/logs'
-        self.logger = logger.Logger().Factory.new(log_name, log_level, log_fmt, log_directory)
+        self.logger = logger.Logger().Factory.new_logger(log_name, log_level, log_fmt, log_directory)
         file_handler = self.logger.create_file_handler()
-        factory_file_handler = logger.Logger().Factory.create_file_handler(log_name, log_level, log_fmt, log_directory)
+        factory_file_handler = logger.Logger().Factory.new_file_handler(log_name, log_level, log_fmt, log_directory)
         self.assertEqual(file_handler.name, factory_file_handler.name)

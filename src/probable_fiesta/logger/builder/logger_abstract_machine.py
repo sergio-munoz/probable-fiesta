@@ -24,7 +24,7 @@ class LoggerAbstractFactory(ABC):
 class DefaultFactory(LoggerAbstractFactory):
     def create_logger(self, name, level, fmt, directory):
         print("Creating default logger")
-        logger = LoggerFactory().new_logger(name, level, fmt, directory)
+        logger = LoggerFactory().new_logger_get_logger(name, level, fmt, directory)
         return logger
 
 class FlaskFactory(LoggerAbstractFactory):

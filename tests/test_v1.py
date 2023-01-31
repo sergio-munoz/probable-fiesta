@@ -1,11 +1,10 @@
 """Test file for cli/v1.py."""
-from logging import DEBUG
+from src.probable_fiesta.cli.v1 import create_argument_parser
+from src.probable_fiesta.logger.builder.logger_factory import LoggerFactory as LF
+
 from unittest import TestCase
 
-from src.probable_fiesta.cli.v1 import create_argument_parser
-from src.probable_fiesta.logger.logging_config import set_logger
-
-LOG = set_logger("test_v1", DEBUG)  # Create a logger if needed. Default: INFO
+LOG = LF.new_logger_get_logger("test_v1", "DEBUG")
 
 
 class TestCliV1(TestCase):

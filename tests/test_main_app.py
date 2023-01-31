@@ -2,16 +2,15 @@
 from src.probable_fiesta.app import main as main_app
 from src.probable_fiesta.app.builder.app_builder import AppBuilder
 from src.probable_fiesta.command.builder import command
-from src.probable_fiesta.logger.logging_config import set_logger
+from src.probable_fiesta.logger.builder.logger_factory import LoggerFactory
 from src.probable_fiesta.__about__ import __version__
 from src.probable_fiesta.config.variables import PackageDef, VariablesDef
 from src.probable_fiesta.app.builder.context_factory import ContextFactory
 
-from logging import DEBUG
 from unittest import TestCase
 
 # Create a logger if needed for testing cases
-LOG_TEST = set_logger("test_main_app", DEBUG)  # Defaults as INFO
+LOG_TEST = LoggerFactory.new_logger_get_logger("test_main_app", "DEBUG")
 
 class TestMainApp(TestCase):
 

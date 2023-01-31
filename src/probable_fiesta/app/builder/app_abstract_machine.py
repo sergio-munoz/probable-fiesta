@@ -1,10 +1,7 @@
 from abc import ABC
 from enum import Enum, auto
 from .app_builder import AppBuilder
-from ...command.builder.command_builder import CommandBuilder
-from .context_factory import ContextFactory
-from ...config.config_factory import ConfigFactory
-from ...cli.builder.args_parser_factory import ArgsParserFactory
+from ...config.builder.config_builder_factory import ConfigFactory
 
 class App(ABC):
     def run(self):

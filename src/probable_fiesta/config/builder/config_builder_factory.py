@@ -1,9 +1,9 @@
-from .builder.config_builder import ConfigBuilder
-from ..logger.builder.logger_abstract_machine import LoggerMachine as loggerMachine
-from .variables import PackageDef as pd
-from .variables import LoggerDef as ld
-from .variables import VariablesDef as vd
-from .variables import DotEnvDef as ded
+from .config_builder import ConfigBuilder
+from ...logger.builder.logger_abstract_machine import LoggerMachine as loggerMachine
+from ..variables import PackageDef as pd
+from ..variables import LoggerDef as ld
+from ..variables import VariablesDef as vd
+from ..variables import DotEnvDef as ded
 
 class ConfigFactory:
     @staticmethod
@@ -23,7 +23,7 @@ class ConfigFactory:
             .package\
                 .set_package_name(pd.NAME)\
             .logger\
-                .set_logger(logger.get_logger())\
+                .set_logger(logger)\
             .variables\
                 .set_variable('VERSION', vd.VERSION)\
             .dotenv\

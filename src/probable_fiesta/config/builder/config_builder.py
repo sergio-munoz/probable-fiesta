@@ -7,9 +7,9 @@ class ConfigBuilder():
             self.config = Config()
         else:
             self.config = config
-    @property
-    def my_logger(self):
-        return ConfigMyLogger(self.config)
+    
+    def __str__(self):
+        return f"ConfigBuilder: {self.config.__dict__}"
 
     @property
     def package(self):

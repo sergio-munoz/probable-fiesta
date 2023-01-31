@@ -17,4 +17,9 @@ class TestConfig(TestCase):
     def test_init(self):
         #LOG.info("Test init")
         self.config = config.Config()
-        self.assertEqual(str(self.config), "Config: {'package': None, 'logger': None, 'variables': None, 'dotenv': None, 'parsed_dotenv': {}}")
+        self.assertEqual(str(self.config), "Config: {'package': {}, 'logger': None, 'variables': {}, 'dotenv': None, 'parsed_dotenv': {}}")
+
+    def test_get_setting_not_loaded(self):
+        #LOG.info("Test get_setting()")
+        self.config = config.Config()
+        self.assertEqual(self.config.get_setting("test"), None)
