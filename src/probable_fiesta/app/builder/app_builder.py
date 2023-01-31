@@ -40,6 +40,8 @@ class App:
                 print("App context is not valid")
                 local_valid = False
 
+        # validate config
+        #TODO
         self.valid = local_valid
         return self
 
@@ -91,9 +93,10 @@ class App:
         arg = self.args_parser.get_parsed_arg(name)
         if arg is None:
             try:
-                self.config.parsed_dotenv[name]
+                self.config.get_setting(name)
             except KeyError:
                 print("No arg or dotenv config set for: ", name)
+                return None
         return arg
 
 class AppBuilder:

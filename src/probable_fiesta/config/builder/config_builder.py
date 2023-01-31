@@ -1,15 +1,5 @@
-from ..logger.builder.logger_factory import LoggerFactory
-
-class Config():
-    def __init__(self):
-        self.package = {}
-        self.logger = None
-        self.variables = {}
-        self.dotenv = {}
-        self.parsed_dotenv = {}
-
-    def __str__(self):
-        return f"Config: {self.__dict__}"
+from ...logger.builder.logger_factory import LoggerFactory
+from .config import Config
 
 class ConfigBuilder():
     def __init__(self, config=None):

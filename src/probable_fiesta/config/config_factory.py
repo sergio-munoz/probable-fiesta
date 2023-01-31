@@ -1,4 +1,4 @@
-from .config_builder import ConfigBuilder
+from .builder.config_builder import ConfigBuilder
 from ..logger.builder.logger_abstract_machine import LoggerMachine as loggerMachine
 from .variables import PackageDef as pd
 from .variables import LoggerDef as ld

@@ -25,9 +25,9 @@ class Parser:
             print("parse args first.")
             return None
         if arg in self.parsed_args:
-            #print("arg found: ", arg)
+            print("arg found: ", arg)
             a = self.parsed_args.__dict__.get(arg)
-            #print("arg value: ", a)
+            print("arg value: ", a)
             return a
         return None
 
