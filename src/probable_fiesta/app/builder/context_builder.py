@@ -1,5 +1,4 @@
 """Context builder class."""
-from .context import Context
 
 class ContextBuilder:
 

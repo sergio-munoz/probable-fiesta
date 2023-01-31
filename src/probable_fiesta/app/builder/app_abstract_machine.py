@@ -1,6 +1,6 @@
 from abc import ABC
 from enum import Enum, auto
-from .my_app_builder import MyAppBuilder
+from .app_builder import AppBuilder
 from ...command.builder.command_builder import CommandBuilder
 from .context_factory import ContextFactory
 from ...config.config_factory import ConfigFactory
@@ -25,63 +25,10 @@ class AppFactory(ABC):
     def prepare_default(self):
         pass
 
-class MyappFactory(AppFactory):
-    def create_app(self, name, context, args_parse, args, config):
-        print("Creating my app")
-        my_app_builder = MyAppBuilder()
-        my_app = my_app_builder\
-            .name\
-                .set_name(name)\
-            .context\
-                .set_context(context)\
-            .arguments\
-                .validate_with_args_parse(args_parse, args)\
-            .config\
-                .set_config(config)\
-            .build()
-        return my_app
-
-    def prepare_default(self):
-        print("Preparing default my app sample")
-        args = ["--test"]
-        function = lambda x: (x)
-
-        # get commands
-        command_builder = CommandBuilder()
-        commands = command_builder.queue\
-            .add_new_command("test", function, args)\
-            .build()
-
-        # get context
-        context = ContextFactory().new_context("default", commands)
-        context.command_queue.print_queue()
-
-        args_parser = ArgsParserFactory().new("--test", action='store_true', help=f"Current version")
-
-        # get default config
-        config = ConfigFactory.new_default_config_builder('default', 'myapp_factory')
-
-        # create app
-        my_app_builder = MyAppBuilder()
-        my_app = my_app_builder\
-            .name\
-                .set_name("sample app")\
-            .context\
-                .set_context(context)\
-            .args_parse\
-                .set_args_parse(args_parser)\
-            .arguments\
-                .set_arguments(args)\
-                .validate_args()\
-            .config\
-                .set_config(config)\
-            .build()
-        return my_app
-
 class FlaskFactory(AppFactory):
     def create_app(self, name, context, args_parse, args, config):
         print("Creating flask app")
-        my_app_builder = MyAppBuilder()
+        my_app_builder = AppBuilder()
         config = ConfigFactory.new_config_builder('flask' , 'flask_factory').build()
         #logger = get_config('flask', 'flask_factory')
         my_app = my_app_builder\
@@ -101,7 +48,7 @@ class FlaskFactory(AppFactory):
 
 class AppMachine:
     class AvailableApps(Enum):
-        MYAPP = auto()
+        APP = auto()
         FLASK = auto()
     
     factories = []
@@ -132,8 +79,8 @@ class AppMachine:
         return self.factories[0][1].prepare_default()
 
 def create_app(type):
-    if type == 'my_app':
-        return MyappFactory().create_app()
+    if type == 'app':
+        return AppFactory().create_app()
     elif type == 'metrics_app':
         return FlaskFactory().create_app()
     else:
@@ -141,8 +88,8 @@ def create_app(type):
         return None
 
 def prepare_default_app(type):
-    if type == 'my_app':
-        return MyappFactory().prepare_default()
+    if type == 'app':
+        return AppFactory().prepare_default()
     else:
         print("Only my_app is supported")
         return None

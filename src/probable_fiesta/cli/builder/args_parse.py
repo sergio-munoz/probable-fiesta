@@ -7,7 +7,7 @@ class Parser:
         else:
             self.parser = MyArgumentParser(add_help=add_help, description=description)
         self.valid = False
-        self.parsed_args = None
+        self.parsed_args = None  # validated arguments
         self.error = None
 
     def __str__(self):
@@ -21,10 +21,15 @@ class Parser:
         return self.parsed_args 
 
     def get_parsed_arg(self, arg):
-        try:
-            return self.parsed_args[arg]
-        except KeyError:
+        if not self.parsed_args:
+            print("parse args first.")
             return None
+        if arg in self.parsed_args:
+            #print("arg found: ", arg)
+            a = self.parsed_args.__dict__.get(arg)
+            #print("arg value: ", a)
+            return a
+        return None
 
     def validate(self, args=None):
         self.valid = True

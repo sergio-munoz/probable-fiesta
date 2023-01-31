@@ -47,10 +47,16 @@ class App:
         if not self.valid:
             print("App is not valid.\nTrying to run anyway.")
             #print(self.context)
-            command_queue = self.context.command_queue.run_all()
-            #print("Command Queue: ", command_queue)
+            if name is None:
+                for name in self.context.context_holder.keys():
+                    context = self.context.context_holder[name]
+                    context_run = context.command_queue.run_all()
+                    context_run_history = context_run.get_history()
+                    self.context_run_history.append(context_run_history)
+                return self
+            command_queue = self.context.context_holder[name].command_queue.run_all()
             self.run_history.append(command_queue.get_history())
-            return
+            return self
         #print("App is valid")
         if name is None:
             #print("Running all commands")
@@ -62,7 +68,7 @@ class App:
                 #print("context run: ", context_run)
                 context_run_history = context_run.get_history()
                 self.run_history.append(context_run_history)
-            return
+            return self
         #print("Running one command for context: ", name)
         command_queue = self.context.context_holder[name].command_queue.run_all()
         #print("Command Queue: ", command_queue)
@@ -80,6 +86,15 @@ class App:
     def clear_run_history(self):
         self.run_history = []
         return self
+
+    def get_arg(self, name):
+        arg = self.args_parser.get_parsed_arg(name)
+        if arg is None:
+            try:
+                self.config.parsed_dotenv[name]
+            except KeyError:
+                print("No arg or dotenv config set for: ", name)
+        return arg
 
 class AppBuilder:
     
@@ -162,8 +177,6 @@ class AppArgumentsBuilder(AppBuilder):
         return self
 
     def clean_arguments(self, arguments):
-        #self.app.cleaned_args = []
-        #self.app.cleaned_argv = []
         self.app.cleaned_args, self.app.cleaned_argv = self.clean_arg_function(arguments)
         return self
 

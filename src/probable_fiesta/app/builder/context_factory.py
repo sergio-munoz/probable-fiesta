@@ -13,3 +13,9 @@ class ContextFactory:
         cq = CommandQueue.new(CommandFactory.new_command(command_name, function, *args))
         context = ContextFactory.new_context(context_name, cq)
         return context
+
+    @staticmethod
+    def new_context_one_command(context_name, command):
+        cq = CommandQueue.new(command)
+        context = ContextFactory.new_context(context_name, cq)
+        return context

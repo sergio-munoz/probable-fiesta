@@ -11,7 +11,7 @@ from unittest import TestCase
 LOG = set_logger("test_app_builder", DEBUG)
 
 
-class TestAppBuilderMyAppBuilder(TestCase):
+class TestAppBuilderAppBuilder(TestCase):
 
     def setUp(self):
         self.aB = app_builder.AppBuilder()
