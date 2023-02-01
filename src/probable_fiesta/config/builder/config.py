@@ -15,4 +15,5 @@ class Config():
         try:
             return self.parsed_dotenv[name]
         except KeyError:
+            print("No dotenv config set for: ", name)
             return None

@@ -15,7 +15,7 @@ class App:
         self.error = None
         self.run_history = []
         self.cleaned_args = {}
-        self.action_commands = []  # commands to be run from args
+        self.executables = []  # commands to be run from args
 
     def __str__(self):
         return f"App: {self.__dict__}"
@@ -23,7 +23,7 @@ class App:
     def validate(self):
         local_valid = True
 
-        # arguments
+        # validate arguments
         if self.arguments is None:
             print("validate fail: App arguments are empty")
             local_valid = False
@@ -39,6 +39,22 @@ class App:
             if not self.context.validate(self.args_parser.get_parsed_args()):
                 print("App context is not valid")
                 local_valid = False
+
+        # validate executables
+        if self.executables is not None:
+            for e in self.executables:
+                if e not in self.args_parser.get_parsed_args():
+                    print("App executable not valid: ", e)
+                    self.executables.remove(e)
+            if len(self.executables) == 0:
+                print("App executables are not valid")
+                local_valid = False
+        
+        # validate short flags
+        self.cleaned_args = AppArgumentsBuilder(None).map_short_flags(self.cleaned_args, vars(self.args_parser.get_parsed_args()))
+        if not self.cleaned_args:
+            print("App cleaned_args are not valid")
+            local_valid = False
 
         self.valid = local_valid
         return self
@@ -62,27 +78,19 @@ class App:
         #print("App is valid")
         if name is None:
             # Run all commands from cleaned arguments that match context
-            for k in self.cleaned_args.keys():
-                print("Running command from args: ", k)
-                context_run = self.context.context_holder[k].command_queue.run_all()
-                self.run_history.append(context_run.get_history())
-
-            # enable this to run all commands regardless of args
-            #print("Running all commands")
-            #for name in self.context.context_holder.keys():
-                #print("Running command for context: ", name)
-                #context = self.context.context_holder[name]
-                #print("context: ", context)
-                #context_run = context.command_queue.run_all()
-                #print("context run: ", context_run)
-                #context_run_history = context_run.get_history()
-                #self.run_history.append(context_run_history)
+            for name in self.cleaned_args.keys():
+                if name in self.context.context_holder.keys():
+                    if name not in self.executables:
+                        if name not in self.args_parser.get_parsed_args():
+                            print("Did not find command in args: ", name)
+                        else:
+                            print("Running command from args: ", name)
+                            context_run = self.context.context_holder[name].command_queue.run_all()
+                            self.run_history.append(context_run.get_history())
             return self
-        
         #print("Running one command for context: ", name)
-        command_queue = self.context.context_holder[name].command_queue.run_all()
-        #print("Command Queue: ", command_queue)
-        self.run_history.append(command_queue.get_history())
+        context_run = self.context.context_holder[name].command_queue.run_all()
+        self.run_history.append(context_run.get_history())
         return self
 
     def get_run_history(self):
@@ -98,14 +106,16 @@ class App:
         return self
 
     def get_arg(self, name):
-        arg = self.args_parser.get_parsed_arg(name)
-        if arg is None:
-            try:
-                self.config.get_setting(name)
-            except KeyError:
-                print("No arg or dotenv config set for: ", name)
-                return None
-        return arg
+        try:
+            # dotenv is in uppercase
+            found_arg = self.config.get_setting(name.upper())
+        except KeyError:
+            #print("No dotenv config set for: ", name)
+            found_arg = None
+        # flags have priority
+        if name.lower() in self.cleaned_args.keys():
+            found_arg = self.cleaned_args[name.lower()]
+        return found_arg
 
 class AppBuilder:
     
@@ -183,18 +193,26 @@ class AppArgumentsBuilder(AppBuilder):
         super().__init__(app)
 
     def set_arguments(self, arguments):
-        self.clean_arguments(arguments)
         self.app.arguments = arguments
+        self.app.cleaned_args = self.clean_arg_function(arguments)
         return self
 
     def clean_arguments(self, arguments: list):
         self.app.cleaned_args = self.clean_arg_function(arguments)
         return self
 
-    def add_action_argument(self, argument):
-        if argument not in self.app.cleaned_args:
-            print("Argument not found in cleaned args: ", argument)
-            return self
+    def set_executables(self, executables: list):
+        self.app.executables = executables
+        return self
+
+    @staticmethod
+    def map_short_flags(arguments, parsed_args):
+        for arg in parsed_args.keys():
+            clean = arg.split('_')[-1]
+            if clean in arguments:
+                # update dictionary with long flag
+                arguments[arg] = arguments.pop(clean)
+        return arguments
 
     @staticmethod
     def clean_arg_function(arguments: list):
@@ -207,12 +225,11 @@ class AppArgumentsBuilder(AppBuilder):
                 return argument.replace('-', '', 1).replace('-', '_')
             return argument
 
-        arg_dict = {} # dict to return
-
+        arg_dict = {}
         args_list = [] # internal list
         argv_list = [] # internal list
-        # clean args and return a dict
 
+        # clean args and return a dict
         for arg in arguments:
             if is_flag(arg):
                 # Check remaining
