@@ -76,18 +76,16 @@ class App:
             return self
 
         #print("App is valid")
+        # Run all commands from cleaned arguments that match context
         if name is None:
-            # Run all commands from cleaned arguments that match context
             for name in self.cleaned_args.keys():
-                if name in self.context.context_holder.keys():
-                    if name not in self.executables:
-                        if name not in self.args_parser.get_parsed_args():
-                            print("Did not find command in args: ", name)
-                        else:
-                            print("Running command from args: ", name)
-                            context_run = self.context.context_holder[name].command_queue.run_all()
-                            self.run_history.append(context_run.get_history())
+                if name in self.executables:
+                    if name in self.context.context_holder.keys():
+                        #print("Running command from args: ", name)
+                        context_run = self.context.context_holder[name].command_queue.run_all()
+                        self.run_history.append(context_run.get_history())
             return self
+
         #print("Running one command for context: ", name)
         context_run = self.context.context_holder[name].command_queue.run_all()
         self.run_history.append(context_run.get_history())
