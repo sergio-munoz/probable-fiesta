@@ -67,3 +67,11 @@ Build and a command. Pass flags, for example `--version`:
 ```bash
 ./scripts/build_install.sh & probable_fiesta --version
 ```
+
+## Tests
+
+### Automatic
+
+```bash
+./scripts/test_coverage.sh
+```
