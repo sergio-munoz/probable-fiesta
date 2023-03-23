@@ -1,5 +1,6 @@
 from .my_args_parser import MyArgsParser
 
+
 class Parser:
     def __init__(self, parser=None, add_help=True, description=None):
         if parser is not None:
@@ -12,7 +13,7 @@ class Parser:
 
     def __str__(self):
         return f"Parser: {self.__dict__}"
-    
+
     def add_argument(self, *args, **kwargs):
         if not args:
             print("No args to parse")
@@ -28,16 +29,14 @@ class Parser:
         return self.parsed_args
 
     def get_parsed_args(self):
-        return self.parsed_args 
+        return self.parsed_args
 
     def get_parsed_arg(self, arg):
         if not self.parsed_args:
             print("parse args first.")
             return None
         if arg in self.parsed_args:
-            #print("arg found: ", arg)
             a = self.parsed_args.__dict__.get(arg)
-            #print("arg value: ", a)
             return a
         return None
 
@@ -55,7 +54,7 @@ class Parser:
     def new(parser=None, add_help=True, description=None):
         return Parser(parser, add_help, description)
 
-    class Factory():
+    class Factory:
         @staticmethod
         def new(parser=None, add_help=True, description=None):
             return Parser.new(parser, add_help, description)
