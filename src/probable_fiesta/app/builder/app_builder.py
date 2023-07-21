@@ -17,6 +17,7 @@ class App:
         self.run_history = []
         self.cleaned_args = {}
         self.executables = []  # commands to be run from args
+        self.output = None
 
     def __str__(self):
         return f"App: {self.__dict__}"
@@ -69,13 +70,16 @@ class App:
             if name is None:
                 # Running without cleaned arguments that match context
                 for name in self.context.context_holder.keys():
-                    context = self.context.context_holder[name]
-                    context_run = context.command_queue.run_all()
-                    context_run_history = context_run.get_history()
-                    self.context_run_history.append(context_run_history)
+                    context = self.context.context_holder[name].command_queue.run_all()
+                    self.output = context  # Add this line
+                    print(
+                        "DEBUG: Context name:", name
+                    )  # Add this print statement for debugging
+                    print("DEBUG: CommandQueue object:", context)  # Change this line
+                    self.output = context_run.get_output()
                 return self
-            command_queue = self.context.context_holder[name].command_queue.run_all()
-            self.run_history.append(command_queue.get_history())
+            context_run = self.context.context_holder[name].command_queue.run_all()
+            self.run_history.append(context_run.get_history())
             return self
 
         # print("App is valid")
@@ -89,17 +93,23 @@ class App:
                             name
                         ].command_queue.run_all()
                         self.run_history.append(context_run.get_history())
+                        # Add the following line to store the output after appending to run_history
+                        self.output = context_run.get_output()
             return self
 
         # print("Running one command for context: ", name)
         context_run = self.context.context_holder[name].command_queue.run_all()
+        print("DEBUG: Context name:", name)
+        print(
+            "DEBUG: CommandQueue object:", context_run
+        )  # replace `command_queue` with `context_run`
         self.run_history.append(context_run.get_history())
         return self
 
     def get_run_history(self):
         if len(self.run_history) == 0:
             print("No run history found")
-            return
+            return []
         if len(self.run_history) == 1:
             return self.run_history[0]
         return self.run_history
@@ -154,6 +164,9 @@ class AppBuilder:
     def validate(self):
         self.app.validate()
         return self
+
+    def get_output(self):
+        return self.output
 
 
 class AppContextBuilder(AppBuilder):

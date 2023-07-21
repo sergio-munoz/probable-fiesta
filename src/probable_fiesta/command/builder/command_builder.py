@@ -2,8 +2,8 @@
 
 from .command_queue import CommandQueue
 
-class CommandBuilder:
 
+class CommandBuilder:
     def __init__(self, command_queue=None):
         if command_queue is not None:
             self.command_queue = command_queue
@@ -20,8 +20,8 @@ class CommandBuilder:
     def build(self):
         return self.command_queue
 
-class CommandBuilderQueue(CommandBuilder):
 
+class CommandBuilderQueue(CommandBuilder):
     def __init__(self, command_queue):
         super().__init__(command_queue)
 
@@ -101,3 +101,9 @@ class CommandBuilderQueue(CommandBuilder):
     def add_command_builder_factory(self, command_builder_factory):
         self.command_queue.add_command_queue(command_builder_factory.build())
         return self
+
+    def run_piped_commands(self, commands):
+        input_data = None
+        for command in commands:
+            input_data = self.command_queue.run_command(command, input_data)
+        return input_data

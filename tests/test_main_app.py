@@ -12,8 +12,8 @@ from unittest import TestCase
 # Create a logger if needed for testing cases
 LOG_TEST = LoggerFactory.new_logger_get_logger("test_main_app", "DEBUG")
 
-class TestMainApp(TestCase):
 
+class TestMainApp(TestCase):
     def setUp(self):
         self.app_builder = AppBuilder()
 
@@ -30,8 +30,8 @@ class TestMainApp(TestCase):
         app = self.app_builder.context.add_context(co).build()
         app.run("version test")
         stdout = app.get_run_history()
-        #LOG.debug(stdout)
-        expected = f"{PackageDef.NAME} v.{VariablesDef.VERSION}" 
+        # LOG.debug(stdout)
+        expected = f"{PackageDef.NAME} v.{VariablesDef.VERSION}"
         self.assertEqual(stdout, expected)
 
     def test_argument(self):
@@ -43,3 +43,27 @@ class TestMainApp(TestCase):
         arg = "--invalid"
         expected = f"unrecognized arguments: {arg}"
         self.assertEqual(main_app.main([arg]), expected)
+
+    @staticmethod
+    def add_one(x):
+        return x + 1
+
+    @staticmethod
+    def add_two(x):
+        return x + 2
+
+    def test_pipe_mode(self):
+        LOG_TEST.info("Test pipe mode")
+
+        c1 = command.Command("add_one", TestMainApp.add_one, 1)
+        c2 = command.Command("add_two", TestMainApp.add_two, 2)
+
+        co = ContextFactory.new_context("pipe_mode_test")
+        co.command_queue.add_command(c1).add_command(c2)
+
+        app = self.app_builder.context.add_context(co).build()
+        app.run("pipe_mode_test")
+
+        stdout = app.get_run_history()
+        expected = [2, 4]
+        self.assertEqual(stdout, expected)

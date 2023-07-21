@@ -2,49 +2,56 @@
 from .command_factory import CommandFactory
 from .command import Command
 
-class CommandQueue():
 
+class CommandQueue:
     def __init__(self):
         self.queue = []
         self.history = []
         self.length = 0
+        self.output = None  # output of the last executed command
 
     def add_command(self, command):
         if command is not None:
             self.queue.append(command)
             self.length += 1
+        return self
 
     def add_new_command(self, name, function, *args):
         c = CommandFactory().new_command(name, function, *args)
         if c is not None:
             self.queue.append(c)
             self.length += 1
+        return self
 
     def remove(self, command):
         removed = self.queue.remove(command)
         if removed:
             self.length -= 1
+        return self
 
     def clear(self):
         self.queue = []
         self.length = 0
-
-    def run_command(self, command):
-        self.length -= 1
-        self.history.append(command.invoke())
         return self
+
+    def run_command(self, command, input_data=None):
+        self.length -= 1
+        result = command.invoke(input_data)
+        self.history.append(result)
+        self.output = result
+        return result
 
     def run_all(self):
         if self.length <= 0:
             print("No commands in queue")
-            return None
-        elif self.length == 1:
-            self.run_command(self.queue.pop())
+            return self
         else:
-            for c in self.queue:
-                self.run_command(c)
-        return self
-    
+            previous_result = None
+            while self.queue:
+                command = self.queue.pop(0)
+                previous_result = self.run_command(command, previous_result)
+            return self
+
     def get_history(self):
         "Get history and clears it."
         if len(self.history) <= 0:
@@ -61,7 +68,7 @@ class CommandQueue():
         return self.queue
 
     def __str__(self):
-        return f'CommandQueue: loaded commands: {self.length} executed commands: {self.history} '
+        return f"CommandQueue: loaded commands: {self.length} executed commands: {self.history} "
 
     def print_queue(self):
         for c in self.queue:
@@ -84,6 +91,7 @@ class CommandQueue():
             elif isinstance(queue, CommandQueue):
                 command_queue = queue
             elif isinstance(queue, Command):
+                # Create a new CommandQueue with a single Command
                 command_queue.add_command(queue)
             else:
                 print("Invalid queue type: %s", type(queue))
@@ -91,7 +99,12 @@ class CommandQueue():
             print("Creating empty queue: %s", queue)
         return command_queue
 
-    class Factory():
+    def get_output(self):
+        # Return the output of the last executed command
+        print("DEBUG: CommandQueue output:", self.output)  # Debugging print statement
+        return self.output
+
+    class Factory:
         @staticmethod
         def new_command_queue(command_or_queue):
             return CommandQueue().new(command_or_queue)
