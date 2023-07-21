@@ -2,6 +2,12 @@
 from ...cli.builder.parser import Parser
 from .context_holder import ContextHolder
 
+from ...logger.builder.logger_factory import LoggerFactory
+
+SYSTEM_LOG = LoggerFactory.new_logger_get_logger(
+    "SYSTEM_LOG", "DEBUG", "simple", "logs/"
+)
+
 
 class App:
     def __init__(self):
@@ -83,6 +89,7 @@ class App:
             return self
 
         # print("App is valid")
+
         # Run all commands from cleaned arguments that match context
         if name is None:
             for name in self.cleaned_args.keys():
@@ -99,10 +106,8 @@ class App:
 
         # print("Running one command for context: ", name)
         context_run = self.context.context_holder[name].command_queue.run_all()
-        print("DEBUG: Context name:", name)
-        print(
-            "DEBUG: CommandQueue object:", context_run
-        )  # replace `command_queue` with `context_run`
+        SYSTEM_LOG.debug("Context name:", name)
+        SYSTEM_LOG.debug("CommandQueue object:", context_run)
         self.run_history.append(context_run.get_history())
         return self
 
@@ -123,7 +128,7 @@ class App:
             # dotenv is in uppercase
             found_arg = self.config.get_setting(name.upper())
         except KeyError:
-            # print("No dotenv config set for: ", name)
+            SYSTEM_LOG.warning("No dotenv config set for: ", name)
             found_arg = None
         # flags have priority
         if name.lower() in self.cleaned_args.keys():
@@ -227,14 +232,12 @@ class AppArgumentsBuilder(AppBuilder):
         self.app.executables = executables
         return self
 
+    # TODO: This method needs work
     @staticmethod
     def map_short_flags(arguments, parsed_args):
         for arg in parsed_args.keys():
             clean = arg.split("_")[-1]
-            print(clean)
-            print(arguments)
             if clean in arguments:
-                print("HERE")
                 # update dictionary with long flag
                 arguments[arg] = arguments.pop(clean)
         return arguments
@@ -294,7 +297,6 @@ class AppArgumentsBuilder(AppBuilder):
                 argv_list.append(arg)
 
         if len(args_list) > 1:
-            print("Many args_list: ", args_list)
             for x in args_list:
                 arg_dict[clean_arg(x)] = None
             # Use the last one as the remainder for argv_list
@@ -315,7 +317,6 @@ class AppArgumentsBuilder(AppBuilder):
                 arg_dict[clean_arg(args_list.pop())] = None
 
         else:
-            print("No args_list: ", args_list)
             for x in argv_list:
                 arg_dict[clean_arg(x)] = None
 

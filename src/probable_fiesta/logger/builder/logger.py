@@ -1,8 +1,8 @@
 """Logger class."""
 import logging
 
-class Logger:
 
+class Logger:
     def __init__(self, name=None, level=None, fmt=None, directory=None):
         # properties
         self.name = name
@@ -10,36 +10,92 @@ class Logger:
         self.fmt = fmt
         self.directory = directory
         # objects
-        self.logger = None 
+        self.logger = None
         self.file_handler = None
 
-    def set_logger(self, logger):
-        self.logger = logger
+    # Additional Method
+    def set_up_logger(self, log_name=None, log_level=None, format=None):
+        if log_name is None:
+            log_name = self.name
+        if log_level is None:
+            log_level = self.level
+        if format is None:
+            format = self.fmt
+
+        self.logger = self.set_logger(log_name, log_level, format)
         return self.logger
 
+    def set_logger(self, log_name, log_level, format):
+        logger = logging.getLogger(log_name)
+
+        if log_level is None:
+            log_level = logging.INFO
+        else:
+            log_level = self.parse_level(log_level)
+
+        logger.setLevel(log_level)
+
+        formatter = self.set_formatter_format(format)
+
+        path = f"{self.directory}/{log_name}.log"
+        print(f"Using {path} as the log file")
+
+        fileh = logging.FileHandler(path, "a")
+        fileh.setFormatter(formatter)
+        logger.addHandler(fileh)
+
+        return logger
+
+    def set_formatter_format(self, option="simple"):
+        options = ["simple", "process", "function"]
+        if option not in options:
+            print("Options: ", option)
+            print("Input error!")
+            raise ValueError
+
+        if option == "simple":
+            return logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
+        if option == "process":
+            return logging.Formatter(
+                "%(asctime)s %(module)s -> %(process)d %(lineno)d %(levelname)s"
+                + " -  %(message)s"
+            )
+        if option == "function":
+            return logging.Formatter(
+                "%(asctime)s %(module)s %(funcName)s -> %(lineno)d %(levelname)s"
+                + " -  %(message)s"
+            )
+
     def get_logger(self, name=None, level=None, fmt=None, directory=None):
-        if name is not None:
-            self.name = name
-        if self.name is None:
-            print("Logger Name not set. Cannot create logger.")
-            return None
-        if level is not None:
-            self.level = level
-        if self.level is None:
-            self.level = self.parse_level(self.level)
-            print("Logger Level: ", self.level)
-        if fmt is not None:
-            self.fmt = fmt
-        if directory is not None:
-            self.directory = directory
-        # create logger
-        _logger = logging.getLogger(self.name)
-        _logger.setLevel(self.level)
-        if self.file_handler is None:
-            self.create_file_handler()
-        _logger.addHandler(self.file_handler)
-        self.logger = _logger
+        if self.logger is None:
+            self.set_up_logger(name, level, fmt)
         return self.logger
+
+    # def get_logger(self, #name=None, level=None, fmt=None, directory=None):
+    # if name is not None:
+    # self.name = name
+    # if self.name is None:
+    # print("Logger Name not set. Cannot create logger.")
+    # return None
+    # if level is not None:
+    # self.level = level
+    # if self.level is None:
+    # self.level = self.parse_level(self.level)
+    # print("Logger Level: ", self.level)
+    # if fmt is not None:
+    # self.fmt = fmt
+    # if directory is not None:
+    # self.directory = directory
+    ## create logger
+    # _logger = logging.getLogger(self.name)
+    # _logger.setLevel(self.level)
+    # if self.file_handler is None:
+    # self.create_file_handler()
+    # _logger.addHandler(self.file_handler)
+    # self.logger = _logger
+    # return self.logger
 
     def create_file_handler(self, name=None, level=None, fmt=None, directory=None):
         if name is None:
@@ -79,7 +135,6 @@ class Logger:
             return logging.CRITICAL
         return logging.INFO
 
-
     def __str__(self) -> str:
         return f"Logger: {self.__dict__}"
 
@@ -92,19 +147,16 @@ class Logger:
         logger = Logger.new(name, level, fmt, directory)
         return logger.get_logger()
 
-
-    class Factory():
+    class Factory:
         @staticmethod
         def new_logger(name=None, level=None, fmt=None, directory=None):
             return Logger.new(name, level, fmt, directory)
 
         @staticmethod
-        def new_file_handler(name=None, level=None, fmt=None, directory=None) -> logging.FileHandler:
+        def new_file_handler(
+            name=None, level=None, fmt=None, directory=None
+        ) -> logging.FileHandler:
             logger = Logger.new(name, level, fmt, directory)
             return logger.create_file_handler()
 
-
     factory = Factory()
-
-
-

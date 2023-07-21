@@ -2,6 +2,17 @@
 from .command_factory import CommandFactory
 from .command import Command
 
+from ...logger.builder.logger_abstract_machine import LoggerMachine
+
+machine = LoggerMachine()
+SYSTEM_LOG = machine.make_logger(
+    type=LoggerMachine.Available.DEFAULT,
+    name="system",
+    level="INFO",
+    fmt="simple",
+    directory="logs/",
+)
+
 
 class CommandQueue:
     def __init__(self):
@@ -43,7 +54,6 @@ class CommandQueue:
 
     def run_all(self):
         if self.length <= 0:
-            print("No commands in queue")
             return self
         else:
             previous_result = None
@@ -55,7 +65,6 @@ class CommandQueue:
     def get_history(self):
         "Get history and clears it."
         if len(self.history) <= 0:
-            print("No commands in history")
             return None
         elif len(self.history) == 1:
             return self.history.pop()
@@ -85,23 +94,23 @@ class CommandQueue:
             if isinstance(queue, list):
                 for command in queue:
                     if not isinstance(command, Command):
-                        print("Invalid command type: %s", type(command))
+                        SYSTEM_LOG.error("Invalid command type: %s", type(command))
                     else:
                         command_queue.add_command(command)
+                        SYSTEM_LOG.debug("Added command: ", command)
             elif isinstance(queue, CommandQueue):
                 command_queue = queue
             elif isinstance(queue, Command):
                 # Create a new CommandQueue with a single Command
                 command_queue.add_command(queue)
             else:
-                print("Invalid queue type: %s", type(queue))
+                SYSTEM_LOG.error("Invalid queue type: %s", type(queue))
         else:
-            print("Creating empty queue: %s", queue)
+            SYSTEM_LOG.warning("Creating empty queue: %s", queue)
         return command_queue
 
     def get_output(self):
         # Return the output of the last executed command
-        print("DEBUG: CommandQueue output:", self.output)  # Debugging print statement
         return self.output
 
     class Factory:
