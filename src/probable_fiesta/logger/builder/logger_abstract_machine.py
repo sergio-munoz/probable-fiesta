@@ -29,14 +29,14 @@ class LoggerAbstractFactory(ABC):
 
 class DefaultFactory(LoggerAbstractFactory):
     def create_default_logger(self, name, level, fmt, directory):
-        print("Creating default logger")
+        # print("Creating default logger")
         logger = LoggerFactory().new_logger_get_logger(name, level, fmt, directory)
         return logger
 
 
 class FlaskFactory(LoggerAbstractFactory):
     def create_flask_logger(self, app, name, level, fmt, directory):
-        print("Creating flask logger")
+        # print("Creating flask logger")
         logger = LoggerFactory().new_logger_flask(app, name, level, fmt, directory)
         return logger
 

@@ -10,7 +10,7 @@ SYSTEM_LOG = machine.make_logger(
     name="system",
     level="INFO",
     fmt="simple",
-    directory="logs/",
+    directory="logs",
 )
 
 

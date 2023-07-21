@@ -1,13 +1,14 @@
 from ...logger.builder.logger_factory import LoggerFactory
 from .config import Config
 
-class ConfigBuilder():
+
+class ConfigBuilder:
     def __init__(self, config=None):
         if config is None:
             self.config = Config()
         else:
             self.config = config
-    
+
     def __str__(self):
         return f"ConfigBuilder: {self.config.__dict__}"
 
@@ -30,17 +31,19 @@ class ConfigBuilder():
     def build(self):
         return self.config
 
+
 class ConfigPackage(ConfigBuilder):
     def __init__(self, config):
         super().__init__(config)
 
     def set_package_name(self, name):
-        self.config.package['name'] = name
+        self.config.package["name"] = name
         return self
 
     def set_root_dir(self, directory):
-        self.config.package['root_directory'] = directory
+        self.config.package["root_directory"] = directory
         return self
+
 
 class ConfigLogger(ConfigBuilder):
     def __init__(self, config):
@@ -87,27 +90,38 @@ class ConfigVariables(ConfigBuilder):
         self.config.variables.update(self.config.variables.module_config)
         return self
 
+
 class ConfigDotEnv(ConfigBuilder):
     def __init__(self, config):
         super().__init__(config)
 
-    def load_dotenv(self):
+    def load_dotenv(self, path=".env"):
         try:
             import dotenv as _dotenv
         except ImportError:
             print("Warning: dotenv package not installed.")
-            self.dotenv = None
-        if _dotenv is not None:
-            _dotenv.load_dotenv()
+        else:
+            self._dotenv = _dotenv
+            self.parse_vars(path)
         return self
-    
-    def get_var(self, var_name):
-        import os
-        if os.getenv(var_name) is not None:
-            self.config.parsed_dotenv[var_name] = os.getenv(var_name)
-        return self
+
+    def parse_vars(self, path):
+        try:
+            with open(path) as f:
+                for line in f:
+                    key, value = line.strip().split("=", 1)
+                    self.config.parsed_dotenv[key] = value
+        except IOError:
+            print(f"Warning: Unable to open .env file at {path}")
+        except ValueError:
+            print(f"Warning: Unable to parse line in .env file: {line}")
 
     def set_vars(self, vars):
         for var in vars:
             self.get_var(var)
         return self
+
+    def get_var(self, var_name):
+        if var_name in self.config.parsed_dotenv:
+            return self.config.parsed_dotenv[var_name]
+        return None

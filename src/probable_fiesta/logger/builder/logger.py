@@ -38,7 +38,7 @@ class Logger:
         formatter = self.set_formatter_format(format)
 
         path = f"{self.directory}/{log_name}.log"
-        print(f"Using {path} as the log file")
+        # print(f"Using {path} as the log file")
 
         fileh = logging.FileHandler(path, "a")
         fileh.setFormatter(formatter)
@@ -46,12 +46,12 @@ class Logger:
 
         return logger
 
-    def set_formatter_format(self, option="simple"):
-        options = ["simple", "process", "function"]
+    def set_formatter_format(self, option=None):
+        options = ["simple", "process", "function", "fun"]
         if option not in options:
-            print("Options: ", option)
-            print("Input error!")
-            raise ValueError
+            raise ValueError(
+                f"Invalid option for formatter format: {option}. Valid options are {options}."
+            )
 
         if option == "simple":
             return logging.Formatter(
@@ -59,13 +59,15 @@ class Logger:
             )
         if option == "process":
             return logging.Formatter(
-                "%(asctime)s %(module)s -> %(process)d %(lineno)d %(levelname)s"
-                + " -  %(message)s"
+                "%(asctime)s %(module)s -> %(process)d -  %(message)s"
             )
         if option == "function":
             return logging.Formatter(
-                "%(asctime)s %(module)s %(funcName)s -> %(lineno)d %(levelname)s"
-                + " -  %(message)s"
+                "%(asctime)s %(module)s %(funcName)s -  %(message)s"
+            )
+        if option == "fun":
+            return FormatterWithEmoji(
+                "%(asctime)s %(module)s %(funcName)s -  %(message)s"
             )
 
     def get_logger(self, name=None, level=None, fmt=None, directory=None):
@@ -160,3 +162,19 @@ class Logger:
             return logger.create_file_handler()
 
     factory = Factory()
+
+
+class FormatterWithEmoji(logging.Formatter):
+    emoji_mapping = {
+        "DEBUG": "🐛",
+        "INFO": "ℹ️",
+        "WARNING": "⚠️",
+        "ERROR": "❌",
+        "CRITICAL": "🚨",
+    }
+
+    def format(self, record):
+        levelname = record.levelname
+        if levelname in self.emoji_mapping:
+            record.msg = f"{self.emoji_mapping[levelname]} {record.msg}"
+        return super().format(record)

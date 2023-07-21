@@ -2,10 +2,15 @@
 from ...cli.builder.parser import Parser
 from .context_holder import ContextHolder
 
-from ...logger.builder.logger_factory import LoggerFactory
+from ...logger.builder.logger_abstract_machine import LoggerMachine
 
-SYSTEM_LOG = LoggerFactory.new_logger_get_logger(
-    "SYSTEM_LOG", "DEBUG", "simple", "logs/"
+machine = LoggerMachine()
+SYSTEM_LOG = machine.make_logger(
+    type=LoggerMachine.Available.DEFAULT,
+    name="system",
+    level="INFO",
+    fmt="simple",
+    directory="logs",
 )
 
 
@@ -106,8 +111,6 @@ class App:
 
         # print("Running one command for context: ", name)
         context_run = self.context.context_holder[name].command_queue.run_all()
-        SYSTEM_LOG.debug("Context name:", name)
-        SYSTEM_LOG.debug("CommandQueue object:", context_run)
         self.run_history.append(context_run.get_history())
         return self
 
