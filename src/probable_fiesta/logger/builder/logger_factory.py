@@ -9,6 +9,8 @@ class LoggerFactory:
 
     @staticmethod
     def new_logger_get_logger(name=None, level=None, fmt=None, directory=None):
+        if not directory:
+            directory = "logs"
         return Logger.new_get_logger(name, level, fmt, directory)
 
     @staticmethod

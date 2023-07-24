@@ -117,8 +117,7 @@ class ConfigDotEnv(ConfigBuilder):
             print(f"Warning: Unable to parse line in .env file: {line}")
 
     def set_vars(self, vars):
-        for var in vars:
-            self.get_var(var)
+        self.config.parsed_dotenv.update(vars)
         return self
 
     def get_var(self, var_name):

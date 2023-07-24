@@ -14,30 +14,37 @@ class Logger:
         self.file_handler = None
 
     # Additional Method
-    def set_up_logger(self, log_name=None, log_level=None, format=None):
-        if log_name is None:
-            log_name = self.name
-        if log_level is None:
-            log_level = self.level
-        if format is None:
-            format = self.fmt
+    def set_up_logger(self, name=None, level=None, fmt=None):
+        if name is None:
+            name = self.name
+        if level is None:
+            level = self.level
+        if fmt is None:
+            fmt = self.fmt
+            if fmt is None:
+                fmt = "simple"
 
-        self.logger = self.set_logger(log_name, log_level, format)
+        self.logger = self.set_logger(name, level, fmt)
         return self.logger
 
-    def set_logger(self, log_name, log_level, format):
-        logger = logging.getLogger(log_name)
+    def set_logger(self, name, level, fmt):
+        logger = logging.getLogger(name)
 
-        if log_level is None:
-            log_level = logging.INFO
+        if level is None:
+            level = self.level
+            if self.level is None:
+                level = logging.INFO
         else:
-            log_level = self.parse_level(log_level)
+            level = self.parse_level(level)
+        logger.setLevel(level)
 
-        logger.setLevel(log_level)
+        if not fmt:
+            fmt = self.fmt
+            if not fmt:
+                fmt = "simple"
+        formatter = self.set_formatter_format(fmt)
 
-        formatter = self.set_formatter_format(format)
-
-        path = f"{self.directory}/{log_name}.log"
+        path = f"{self.directory}/{name}.log"
         # print(f"Using {path} as the log file")
 
         fileh = logging.FileHandler(path, "a")

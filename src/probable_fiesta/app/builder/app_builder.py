@@ -235,7 +235,6 @@ class AppArgumentsBuilder(AppBuilder):
         self.app.executables = executables
         return self
 
-    # TODO: This method needs work
     @staticmethod
     def map_short_flags(arguments, parsed_args):
         for arg in parsed_args.keys():
