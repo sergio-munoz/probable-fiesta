@@ -20,27 +20,20 @@ class TestCommandContextFactory(unittest.TestCase):
         command_name = "sample_command"
         arg1, arg2 = 1, 2
 
-        # Create a CommandQueue object and add the command
-        command_queue = CommandQueue.new(
-            [[CommandFactory.new_command(command_name, sample_function, "repeated")]]
+        # Create a CommandContext object with the command
+        command_context = CommandContextFactory.create_command_context(
+            context_name, command_name, sample_function, arg1, arg2
         )
 
-        command_context = CommandContextFactory.create_command_context(
-            context_name, command_queue, sample_function
-        )
         self.app_builder.context.add_context(command_context)
 
         # Run the created command
-        self.app_builder.build().run(context_name)
+        app = self.app_builder.build()
+        app.run(context_name)
 
         # Check the output
-        run_history = self.app_builder.build().get_run_history()
-        if run_history:
-            stdout = self.app_builder.build().get_output()
-        else:
-            stdout = None
+        stdout = app.get_run_history()
 
-        print("Run history:", run_history)  # Add this print statement for debugging
         print("Actual output:", stdout)  # Add this print statement for debugging
 
         expected_output = sample_function(arg1, arg2)

@@ -1,5 +1,7 @@
 """Command Factory class."""
 from .command import Command
+from .command import CommandFactory as cF
+
 
 class CommandFactory:
     @staticmethod
@@ -8,7 +10,7 @@ class CommandFactory:
 
     @staticmethod
     def new_command(name, function, *args):
-        return Command.Factory.new_command(name, function, *args)
+        return cF.new_command(name, function, *args)
 
     @staticmethod
     def new_command_empty():

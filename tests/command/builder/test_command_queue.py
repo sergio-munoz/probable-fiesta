@@ -10,7 +10,6 @@ LOG = set_logger("test_command_queue", DEBUG)
 
 
 class TestCommandBuilderCommandQueue(TestCase):
-
     def setUp(self):
         self.command_queue = command_queue.CommandQueue()
 
@@ -28,7 +27,7 @@ class TestCommandBuilderCommandQueue(TestCase):
         LOG.debug(str(self.command_queue))
         exp = "CommandQueue: loaded commands: 1 executed commands: [] "
         self.assertEqual(str(self.command_queue), exp)
-    
+
     def test_show(self):
         LOG.info("Test show")
         function = lambda: "Hello World!"
@@ -43,17 +42,20 @@ class TestCommandBuilderCommandQueue(TestCase):
 
     def test_run_all(self):
         LOG.info("Test run all")
-        args = "--version"
-        function = lambda x: (args)
+        function = lambda: "Hello World!"
+        function2 = lambda x: f"Hello {x}"
         self.command_queue = command_queue.CommandQueue()
-        self.command_queue.add_new_command("test1", function, args)
-        self.command_queue.add_new_command("test2", function, args)
+        self.command_queue.add_new_command("test1", function)
+        self.command_queue.add_new_command("test2", function2)
         self.command_queue.run_all()
-        self.assertEqual(str(self.command_queue), "CommandQueue: loaded commands: 0 executed commands: ['--version', '--version'] ")
+        self.assertEqual(
+            str(self.command_queue),
+            "CommandQueue: loaded commands: 0 executed commands: ['Hello World!', 'Hello Hello World!'] ",
+        )
 
     def test_get_history(self):
         LOG.info("Test get history")
-        function = lambda x: (x)
+        function = lambda x: f"{x}"
         self.command_queue = command_queue.CommandQueue()
         self.command_queue.add_new_command("test1", function, "--test1")
         self.command_queue.add_new_command("test2", function, "--test2")

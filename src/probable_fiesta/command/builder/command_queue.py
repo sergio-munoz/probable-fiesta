@@ -1,4 +1,5 @@
 """Command Queue class."""
+import inspect
 from .command_factory import CommandFactory
 from .command import Command
 
@@ -47,7 +48,14 @@ class CommandQueue:
 
     def run_command(self, command, input_data=None):
         self.length -= 1
-        result = command.invoke(input_data)
+        num_params = len(inspect.signature(command.function).parameters)
+
+        # If the command has its own arguments or doesn't need any input, don't pass the input_data
+        if num_params == 0 or command.args or input_data is None:
+            result = command.invoke()
+        else:
+            result = command.invoke(input_data)
+
         self.history.append(result)
         self.output = result
         return result

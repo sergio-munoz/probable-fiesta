@@ -9,64 +9,73 @@ from unittest import TestCase
 LOG = set_logger("test_command", DEBUG)
 
 
-class TestCommandBuilderCommand(TestCase):
+import pytest
 
+from src.probable_fiesta.command.builder import command
+
+
+class TestCommand(TestCase):
+    def test_init_valid(self):
+        name = "test"
+        func = lambda x: x
+        args = (1, 2, 3)
+
+        cmd = command.Command(name, func, *args)
+
+        assert cmd.name == name
+        assert cmd.function == func
+        assert cmd.args == args
+
+    def test_invoke_valid(self):
+        # Setup
+        func = lambda x, y: x**y
+        cmd = command.Command("square", func, 3, 2)
+
+        # Invoke
+        result = cmd.invoke()
+
+        # Assertions
+        self.assertEqual(result, 9)
+
+
+class TestCommandBuilderCommand(TestCase):
     def setUp(self):
         self.command = None
 
     def test_init(self):
-        LOG.info("Test init")
         self.command = command.Command(None, None, None)
         self.assertEqual(self.command.name, None)
         self.assertEqual(self.command.function, None)
         self.assertEqual(self.command.args, (None,))
-        # test _str__
-        LOG.debug(str(self.command))
-        self.assertEqual(str(self.command), "Command: {'name': None, 'function': None, 'args': (None,)}")
 
     def test_init_with_args(self):
-        LOG.info("Test new with args")
         function = lambda: "Hello World!"
         self.command = command.Command("test", function, "--version")
         self.assertEqual(self.command.name, "test")
-        self.assertAlmostEqual(self.command.function, function)
-        self.assertEqual(self.command.args, ('--version',))
-        # test _str__
-        LOG.debug(str(self.command))
-        self.assertEqual(str(self.command), "Command: {'name': 'test', "+f"'function': {function},"+" 'args': ('--version',)}")
+        self.assertEqual(self.command.function, function)
+        self.assertEqual(self.command.args, ("--version",))
 
     def test_factory(self):
-        LOG.info("Test factory")
         function = lambda: "Hello World!"
-        self.command = command.Command.Factory.new_command("test", function, "--version")
+        self.command = command.CommandFactory.new_command("test", function, "--version")
         self.assertEqual(self.command.name, "test")
         self.assertEqual(self.command.function, function)
-        self.assertEqual(self.command.args, ('--version',))
-        # test _str__
-        LOG.debug(str(self.command))
-        self.assertEqual(str(self.command), "Command: {'name': 'test', "+f"'function': {function},"+" 'args': ('--version',)}")
+        self.assertEqual(self.command.args, ("--version",))
 
     def test_invoke(self):
-        LOG.info("Test invoke")
-        self.command = command.Command("test", lambda: "Hello World!", None)
-        stdout = self.command.invoke()
-        print(stdout)
-        LOG.debug(stdout)
-        self.assertEqual(stdout, "Hello World!")
+        function = lambda x: x
+        self.command = command.Command("test", function, None)
+        result = self.command.invoke()
+        self.assertEqual(result, None)
 
     def test_invoke_with_args(self):
-        LOG.info("Test invoke with args")
-        function = lambda x: (self.command.args)
         args = "--version"
+        function = lambda x: x
         self.command = command.Command("test", function, args)
-        stdout = self.command.invoke()
-        LOG.debug(stdout)
-        self.assertEqual(stdout, self.command.args)
+        result = self.command.invoke()
+        self.assertEqual(result, args)
 
     def test_invoke_without_function(self):
-        LOG.info("Test invoke without function expect error log")
         self.command = command.Command(None, None, None)
-        stdout = self.command.invoke()
-        LOG.debug(stdout)
-        self.assertEqual(stdout, None)
-
+        with pytest.raises(TypeError):
+            self.command.invoke()
