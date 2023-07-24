@@ -110,7 +110,10 @@ class ConfigDotEnv(ConfigBuilder):
             with open(path) as f:
                 for line in f:
                     key, value = line.strip().split("=", 1)
-                    self.config.parsed_dotenv[key] = value
+                    if (
+                        key not in self.config.parsed_dotenv
+                    ):  # check if key is not already in the dictionary
+                        self.config.parsed_dotenv[key] = value
         except IOError:
             print(f"Warning: Unable to open .env file at {path}")
         except ValueError:
