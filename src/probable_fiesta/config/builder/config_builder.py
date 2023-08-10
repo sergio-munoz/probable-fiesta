@@ -97,9 +97,9 @@ class ConfigDotEnv(ConfigBuilder):
     def __init__(self, config):
         super().__init__(config)
 
-    def load_dotenv(self, path=".env"):
-        # Determine absolute path of the .env file
-        abs_path = realpath(join(dirname(__file__), path))
+    def load_dotenv(self, path=".env", root_dir="."):
+        # Determine absolute path of the .env file using the provided root_dir
+        abs_path = realpath(join(root_dir, path))
 
         # Use python-dotenv's load_dotenv method
         if ld_env(abs_path):
