@@ -28,11 +28,11 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-"Homepage" = "https://github.com/sergio-munoz/probable_fiesta/"
-"Bug Tracker" = "https://github.com/sergio-munoz/probable_fiesta/issues"
-Documentation = "https://github.com/sergio-munoz/probable_fiesta#readme"
-Issues = "https://github.com/sergio-munoz/probable_fiesta/issues"
-Source = "https://github.com/sergio-munoz/probable_fiesta"
+"Homepage" = "https://github.com/sergio-munoz/probable-fiesta/"
+"Bug Tracker" = "https://github.com/sergio-munoz/probable-fiesta/issues"
+Documentation = "https://github.com/sergio-munoz/probable-fiesta#readme"
+Issues = "https://github.com/sergio-munoz/probable-fiesta/issues"
+Source = "https://github.com/sergio-munoz/probable-fiesta"
 
 [project.scripts]
 probable-fiesta = "probable_fiesta.run:main"
