@@ -19,13 +19,14 @@ class TestLogger(TestCase):
         self.assertEqual(self.logger.level, None)
         self.assertEqual(self.logger.fmt, None)
         self.assertEqual(self.logger.directory, None)
+        self.assertEqual(self.logger.log_to_console, False)
         self.assertEqual(self.logger.logger, None)
         self.assertEqual(self.logger.file_handler, None)
 
-        # test _str__
+        # test __str__
         self.assertEqual(
             str(self.logger),
-            "Logger: {'name': None, 'level': None, 'fmt': None, 'directory': None, 'logger': None, 'file_handler': None}",
+            "Logger: {'name': None, 'level': None, 'fmt': None, 'directory': None, 'log_to_console': False, 'logger': None, 'file_handler': None}",
         )
 
     def test_new(self):
@@ -68,27 +69,3 @@ class TestLogger(TestCase):
             log_name, log_level, log_fmt, log_directory
         )
         self.assertEqual(str(self.logger.__class__), "<class 'logging.Logger'>")
-
-    def test_factory_new(self):
-        log_name = "test_logger"
-        log_level = "DEBUG"
-        log_fmt = "simple"
-        log_directory = ROOT_DIR + "/tests/logs"
-        self.logger = logger.Logger().Factory.new_logger(
-            log_name, log_level, log_fmt, log_directory
-        )
-        self.assertEqual(str(self.logger.name), "test_logger")
-
-    def test_factory_create_file_handler(self):
-        log_name = "test_logger"
-        log_level = "DEBUG"
-        log_fmt = "simple"
-        log_directory = ROOT_DIR + "/tests/logs"
-        self.logger = logger.Logger().Factory.new_logger(
-            log_name, log_level, log_fmt, log_directory
-        )
-        file_handler = self.logger.create_file_handler()
-        factory_file_handler = logger.Logger().Factory.new_file_handler(
-            log_name, log_level, log_fmt, log_directory
-        )
-        self.assertEqual(file_handler.name, factory_file_handler.name)

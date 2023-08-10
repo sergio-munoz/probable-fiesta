@@ -1,5 +1,5 @@
 from .config_builder import ConfigBuilder
-from ...logger.builder.logger_abstract_machine import LoggerMachine as loggerMachine
+from ...logger.builder.logger_machine import LoggerMachine as loggerMachine
 from ..variables import PackageDef as pd
 from ..variables import LoggerDef as ld
 from ..variables import VariablesDef as vd

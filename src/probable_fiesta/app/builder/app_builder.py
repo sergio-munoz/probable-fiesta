@@ -2,7 +2,7 @@
 from ...cli.builder.parser import Parser
 from .context_holder import ContextHolder
 
-from ...logger.builder.logger_abstract_machine import LoggerMachine
+from ...logger.builder.logger_machine import LoggerMachine
 
 machine = LoggerMachine()
 SYSTEM_LOG = machine.make_logger(

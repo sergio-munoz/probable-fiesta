@@ -1,14 +1,19 @@
 """Logger class."""
 import logging
+import os
+import sys
 
 
 class Logger:
-    def __init__(self, name=None, level=None, fmt=None, directory=None):
+    def __init__(
+        self, name=None, level=None, fmt=None, directory=None, log_to_console=False
+    ):
         # properties
         self.name = name
         self.level = level
         self.fmt = fmt
         self.directory = directory
+        self.log_to_console = log_to_console
         # objects
         self.logger = None
         self.file_handler = None
@@ -46,10 +51,23 @@ class Logger:
 
         path = f"{self.directory}/{name}.log"
         # print(f"Using {path} as the log file")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
 
         fileh = logging.FileHandler(path, "a")
         fileh.setFormatter(formatter)
         logger.addHandler(fileh)
+
+        if self.log_to_console:
+            # Add stdout handler
+            stdout_handler = logging.StreamHandler(sys.stdout)
+            stdout_handler.setFormatter(formatter)
+            logger.addHandler(stdout_handler)
+
+            # Optionally, add stderr handler for certain log levels
+            if level >= logging.ERROR:
+                stderr_handler = logging.StreamHandler(sys.stderr)
+                stderr_handler.setFormatter(formatter)
+                logger.addHandler(stderr_handler)
 
         return logger
 
@@ -82,41 +100,17 @@ class Logger:
             self.set_up_logger(name, level, fmt)
         return self.logger
 
-    # def get_logger(self, #name=None, level=None, fmt=None, directory=None):
-    # if name is not None:
-    # self.name = name
-    # if self.name is None:
-    # print("Logger Name not set. Cannot create logger.")
-    # return None
-    # if level is not None:
-    # self.level = level
-    # if self.level is None:
-    # self.level = self.parse_level(self.level)
-    # print("Logger Level: ", self.level)
-    # if fmt is not None:
-    # self.fmt = fmt
-    # if directory is not None:
-    # self.directory = directory
-    ## create logger
-    # _logger = logging.getLogger(self.name)
-    # _logger.setLevel(self.level)
-    # if self.file_handler is None:
-    # self.create_file_handler()
-    # _logger.addHandler(self.file_handler)
-    # self.logger = _logger
-    # return self.logger
-
     def create_file_handler(self, name=None, level=None, fmt=None, directory=None):
         if name is None:
             name = self.name
             if not name:
                 print("Logger name not set. Cannot create file handler.")
                 return None
-        if level is None:
+        if not level:
             level = self.level
-        if fmt is None:
-            fmt = self.fmt
-        if directory is None:
+        if not fmt:
+            fmt = self.set_formatter_format(self.fmt)
+        if not directory:
             directory = self.directory
             if not directory:
                 directory = "./"  # default directory if not set
@@ -148,27 +142,15 @@ class Logger:
         return f"Logger: {self.__dict__}"
 
     @staticmethod
-    def new(name=None, level=None, fmt=None, directory=None):
-        return Logger(name, level, fmt, directory)
+    def new(name=None, level=None, fmt=None, directory=None, log_to_console=False):
+        return Logger(name, level, fmt, directory, log_to_console)
 
     @staticmethod
-    def new_get_logger(name=None, level=None, fmt=None, directory=None):
-        logger = Logger.new(name, level, fmt, directory)
+    def new_get_logger(
+        name=None, level=None, fmt=None, directory=None, log_to_console=False
+    ):
+        logger = Logger.new(name, level, fmt, directory, log_to_console)
         return logger.get_logger()
-
-    class Factory:
-        @staticmethod
-        def new_logger(name=None, level=None, fmt=None, directory=None):
-            return Logger.new(name, level, fmt, directory)
-
-        @staticmethod
-        def new_file_handler(
-            name=None, level=None, fmt=None, directory=None
-        ) -> logging.FileHandler:
-            logger = Logger.new(name, level, fmt, directory)
-            return logger.create_file_handler()
-
-    factory = Factory()
 
 
 class FormatterWithEmoji(logging.Formatter):
