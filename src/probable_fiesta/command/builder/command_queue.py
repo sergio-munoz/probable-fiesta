@@ -2,17 +2,10 @@
 import inspect
 from .command_factory import CommandFactory
 from .command import Command
+from ...logger.builder.logger_machine import SystemLogFactory
 
-from ...logger.builder.logger_machine import LoggerMachine
-
-machine = LoggerMachine()
-SYSTEM_LOG = machine.make_logger(
-    type=LoggerMachine.Available.DEFAULT,
-    name="system",
-    level="INFO",
-    fmt="simple",
-    directory="logs",
-)
+log_factory = SystemLogFactory()
+SYSTEM_LOG = log_factory.create_logger("command_queue", level="DEBUG")
 
 
 class CommandQueue:
