@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.probable_fiesta.config.variables import LoggerDef, LoggerSystemDef
+from ...config.variables import LoggerDef, LoggerSystemDef
 from .logger_factory import LoggerFactory
 
 
