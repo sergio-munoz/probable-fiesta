@@ -1,18 +1,22 @@
 """Unit test file for config.builder.config_builder.py."""
-from src.probable_fiesta.config.builder import config_builder
-
-# from src.probable_fiesta.logger.logging_config import set_logger
-
-# from logging import DEBUG
+import os
+import shutil
 from unittest import TestCase
 
-# Create a logger
-# LOG = set_logger("test_command_builder", DEBUG)
+from src.probable_fiesta.config.builder import config_builder
 
 
 class TestConfig(TestCase):
     def setUp(self):
         self.cB = config_builder.ConfigBuilder()
+        self.root_dir = "test_dir"
+        os.makedirs(self.root_dir, exist_ok=True)
+        self.env_path = os.path.join(self.root_dir, "test.env")
+        with open(self.env_path, "w") as f:
+            f.write("TEST_KEY=TEST_VALUE\n")
+
+    def tearDown(self):
+        shutil.rmtree(self.root_dir)
 
     def test_init(self):
         # LOG.info("Test init")
@@ -92,3 +96,32 @@ class TestConfig(TestCase):
         test_set_logger_format()
         test_set_logger()
         test_set_new_logger()
+
+    def test_load_dotenv_with_root_dir(self):
+        self.cB.dotenv.load_dotenv(path="test.env", root_dir=self.root_dir)
+        self.assertIn("TEST_KEY", self.cB.config.parsed_dotenv)
+        self.assertEqual("TEST_VALUE", self.cB.config.parsed_dotenv["TEST_KEY"])
+
+    def test_parse_vars(self):
+        # Using the parse_vars method from ConfigDotEnv class on self.env_path
+        self.cB.dotenv.parse_vars(self.env_path)
+
+        # Check if the value has been correctly parsed
+        self.assertIn("TEST_KEY", self.cB.config.parsed_dotenv)
+        self.assertEqual("TEST_VALUE", self.cB.config.parsed_dotenv["TEST_KEY"])
+
+    def test_set_vars(self):
+        new_vars = {"NEW_KEY": "NEW_VALUE"}
+        self.cB.dotenv.set_vars(new_vars)
+
+        # Check if the value has been correctly set
+        self.assertIn("NEW_KEY", self.cB.config.parsed_dotenv)
+        self.assertEqual("NEW_VALUE", self.cB.config.parsed_dotenv["NEW_KEY"])
+
+    def test_get_var(self):
+        self.cB.dotenv.set_vars({"NEW_KEY": "NEW_VALUE"})
+        value = self.cB.dotenv.get_var("NEW_KEY")
+        self.assertEqual(value, "NEW_VALUE")
+
+        # Test a key that does not exist
+        self.assertIsNone(self.cB.dotenv.get_var("NON_EXISTENT_KEY"))

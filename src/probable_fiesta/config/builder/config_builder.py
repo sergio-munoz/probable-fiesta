@@ -1,4 +1,4 @@
-from os.path import join, dirname, realpath
+from os.path import join, realpath, exists
 from dotenv import load_dotenv as ld_env
 from ...logger.builder.logger_factory import LoggerFactory
 from .config import Config
@@ -98,15 +98,23 @@ class ConfigDotEnv(ConfigBuilder):
         super().__init__(config)
 
     def load_dotenv(self, path=".env", root_dir="."):
-        # Determine absolute path of the .env file using the provided root_dir
-        abs_path = realpath(join(root_dir, path))
-
-        # Use python-dotenv's load_dotenv method
-        if ld_env(abs_path):
-            print(".env file loaded successfully")
-            self.parse_vars(abs_path)
+        # First, try to load the .env file from the given path
+        if ld_env(path):
+            print(".env file loaded successfully from the given path")
+            self.parse_vars(path)
         else:
-            print(f"Warning: Unable to find .env file at {abs_path}")
+            # If not found or couldn't load from given path,
+            # determine absolute path of the .env file using the provided root_dir
+            abs_path = realpath(join(root_dir, path))
+
+            # Use python-dotenv's load_dotenv method for the absolute path
+            if ld_env(abs_path):
+                print(".env file loaded successfully from absolute path")
+                self.parse_vars(abs_path)
+            else:
+                print(
+                    f"Warning: Unable to find .env file at both {path} and {abs_path}"
+                )
 
         return self
 
